@@ -1,0 +1,680 @@
+<!doctype html><html><head><meta charset=utf8><meta name=viewport content="width=device-width,initial-scale=1,viewport-fit=cover"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#faf9f5;color:#141413}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style></head><body>
+<title>Busuu Companion</title>
+<style>
+  @font-face{font-family:"BW Nista Grotesk";src:url("fonts/BwNistaGrot-Rg.woff2") format("woff2");font-weight:400;font-display:swap}
+  @font-face{font-family:"BW Nista Grotesk";src:url("fonts/BwNistaGrot-Md.woff2") format("woff2");font-weight:500;font-display:swap}
+  @font-face{font-family:"BW Nista Grotesk";src:url("fonts/BwNistaGrot-Bd.woff2") format("woff2");font-weight:600 700;font-display:swap}
+  @font-face{font-family:"BW Nista Grotesk";src:url("fonts/BwNistaGrot-xBd.woff2") format("woff2");font-weight:800 900;font-display:swap}
+
+  *{box-sizing:border-box}
+  html,body{height:100%}
+  body{margin:0;overflow:hidden;background:#0f1216}
+  :focus-visible{outline:2px solid #116EEE;outline-offset:2px}
+  .devwrap{position:fixed;inset:0}
+  .device{position:absolute;top:0;left:0;width:1280px;transform-origin:top left;border-radius:10px;overflow:hidden;background:#fff;box-shadow:0 24px 60px -12px rgba(0,0,0,.55)}
+  .device .chrome{height:30px;background:#e7e9ec;display:flex;align-items:center;gap:6px;padding:0 12px;border-bottom:1px solid #d8dade;font:500 12px -apple-system,sans-serif;color:#6d6d72}
+  .device .chrome i{width:11px;height:11px;border-radius:50%;background:#ff5f57;display:inline-block}
+  .device .chrome i:nth-child(2){background:#febc2e}.device .chrome i:nth-child(3){background:#28c840}
+  .device .chrome span{flex:1;text-align:center;margin-right:50px}
+  .device .chrome + .cs{height:790px}
+  .dbframe{position:fixed;inset:0;width:100%;height:100%;border:0;background:#0f1216}
+  @media (prefers-reduced-motion:reduce){*{scroll-behavior:auto!important}}
+
+  :root{--mono:ui-monospace,Menlo,monospace}
+  .cs{
+    --text-primary:#121b26; --text-secondary:#1e2d40; --text-tertiary:#4b5766; --ink-r:#1a1a2e; --grey-r:#6c757d; --body-r:#495057;
+    --busuublue-100:#116EEE; --busuublue-5:#f3f8fe; --busuublue-20:#e4effd; --cta:#1967d2;
+    --success:#0EBE75; --success-ink:#067a4a; --lime-5:#f3fefa; --lime-20:#bbf7d0;
+    --amber-5:#fffbeb; --amber-20:#fde68a; --amber-100:#92400e; --amber-120:#d97706;
+    --utilityred-5:#fef4f5; --utilityred-20:#fecaca; --utilityred-100:#e2222e;
+    --neutral-5:#f3f4f6; --neutral-100:#9ca3af; --row-border:#E5E7EB; --border-subtle:#dae1ea; --hd-border:#e9ecef; --ground:#f8f9fa;
+    --dimline:#be185d;
+    width:1280px;height:820px;position:relative;display:flex;flex-direction:column;overflow:hidden;
+    background:var(--ground);color:var(--ink-r);font-family:"BW Nista Grotesk",-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;font-size:14px;line-height:1.45;color-scheme:light;
+  }
+  .cs *{box-sizing:border-box}
+  .cs button{font-family:inherit;cursor:pointer;color:inherit}
+  .cs button:focus-visible,.cs a:focus-visible{outline:2px solid var(--busuublue-100);outline-offset:2px}
+  .cs a{color:var(--cta)}
+
+  .db-hd{display:grid;grid-template-columns:1fr auto 1fr;align-items:center;height:60px;padding:0 24px;background:#fff;border-bottom:1px solid var(--hd-border);flex-shrink:0}
+  .db-hd img{height:22px;width:auto;display:block}
+  .db-hd .rt{justify-self:end;display:flex;align-items:center;gap:14px}
+  .db-hd .set{background:none;border:0;font-size:14px;color:var(--grey-r);padding:6px 0}
+  .av{width:30px;height:30px;border-radius:50%;background:var(--busuublue-100);color:#fff;font-size:13px;font-weight:700;display:grid;place-items:center}
+  .tabs{display:flex;background:#e9ecf0;border-radius:999px;padding:3px}
+  .tabs button{height:32px;border:0;border-radius:999px;background:none;font-size:13px;font-weight:700;color:var(--text-tertiary);padding:0 18px}
+  .tabs button[aria-selected="true"]{background:#fff;color:var(--ink-r);box-shadow:0 1px 2px rgba(0,0,0,.12)}
+
+  .recbar{display:flex;align-items:center;gap:12px;padding:8px 24px;background:var(--utilityred-5);border-bottom:1px solid var(--utilityred-20);font-size:13px;color:var(--ink-r);flex-shrink:0}
+  .recbar .rd{width:9px;height:9px;border-radius:50%;background:var(--utilityred-100);animation:pulse 1.4s infinite}
+  .recbar b{font-weight:700}
+  .recbar .sp{flex:1}
+  .recbar time{font-variant-numeric:tabular-nums;font-weight:700}
+  @keyframes pulse{50%{opacity:.35}}
+
+  .db-body{flex:1;min-height:0;display:grid}
+  .col{min-height:0;overflow-y:auto;padding:20px 24px 28px;display:flex;flex-direction:column;gap:16px;scrollbar-width:thin}
+  .col+.col{border-left:1px solid var(--hd-border)}
+
+  .card{background:#fff;border-radius:12px;padding:18px 20px}
+  .sec-h{display:flex;align-items:center;justify-content:space-between;gap:10px;margin-bottom:10px}
+  .sec-h h3{margin:0;font-size:15px;font-weight:700;color:var(--ink-r)}
+  .sec-h .aux{font-size:12px;color:var(--grey-r)}
+  .lbl{font-size:11px;font-weight:700;letter-spacing:.04em;text-transform:uppercase;color:var(--text-tertiary)}
+  .hint{font-size:12px;color:var(--grey-r)}
+  .btn{height:36px;border-radius:8px;padding:0 14px;font-size:13px;font-weight:600;border:1px solid var(--row-border);background:#fff;color:var(--ink-r);display:inline-flex;align-items:center;gap:7px;white-space:nowrap;text-decoration:none}
+  .btn.pri{background:var(--cta);border-color:var(--cta);color:#fff}
+  .btn.rec{background:var(--utilityred-100);border-color:var(--utilityred-100);color:#fff}
+  .btn.ghost{border-color:transparent;background:none;color:var(--grey-r)}
+  .btn.sm{height:30px;padding:0 11px;font-size:12px}
+  .linkbtn{background:none;border:0;padding:0;font-size:12.5px;font-weight:700;color:var(--cta);text-decoration:none;display:inline-flex;align-items:center;gap:4px}
+
+  .pill{display:inline-flex;align-items:center;gap:5px;height:22px;padding:0 9px;border-radius:999px;font-size:11px;font-weight:700;white-space:nowrap}
+  .p-good{background:var(--lime-5);color:var(--success);box-shadow:inset 0 0 0 1px var(--lime-20)}
+  .p-blue{background:var(--busuublue-5);color:var(--busuublue-100);box-shadow:inset 0 0 0 1px var(--busuublue-20)}
+  .p-warn{background:var(--amber-5);color:var(--amber-120);box-shadow:inset 0 0 0 1px var(--amber-20)}
+  .p-grey{background:var(--neutral-5);color:var(--grey-r)}
+  .p-red{background:var(--utilityred-5);color:var(--utilityred-100)}
+
+  .now{border-radius:14px;padding:18px 20px;background:#fff;display:flex;flex-direction:column;gap:12px;border:1px solid var(--row-border)}
+  .now.live{border-color:#bcd6fb;box-shadow:0 0 0 4px var(--busuublue-5)}
+  .now.recording{border-color:var(--utilityred-20);background:linear-gradient(var(--utilityred-5),#fff 70%)}
+  .now.ready{border-color:var(--lime-20);background:linear-gradient(var(--lime-5),#fff 70%)}
+  .now-top{display:flex;align-items:flex-start;gap:14px}
+  .now-top .tx{flex:1;min-width:0}
+  .now-k{font-size:11px;font-weight:700;letter-spacing:.05em;text-transform:uppercase;color:var(--cta);display:flex;align-items:center;gap:6px}
+  .now.recording .now-k{color:var(--utilityred-100)}
+  .now.ready .now-k{color:var(--success-ink)}
+  .now-t{font-size:17px;font-weight:700;color:var(--ink-r);margin-top:3px;line-height:1.3}
+  .now-m{font-size:12.5px;color:var(--grey-r);margin-top:2px}
+  .now-acts{display:flex;gap:8px;flex-wrap:wrap;align-items:center}
+  .plat{width:40px;height:40px;border-radius:10px;display:grid;place-items:center;flex-shrink:0;font-size:13px;font-weight:800;color:#fff}
+  .plat.teams{background:#5b5fc7}.plat.meet{background:#0f9d58}.plat.zoom{background:#2d8cff}
+  .livedot{width:8px;height:8px;border-radius:50%;background:var(--busuublue-100);box-shadow:0 0 0 3px #cfe0fb}
+  .timer{font-size:34px;font-weight:800;letter-spacing:-.02em;font-variant-numeric:tabular-nums;color:var(--ink-r);line-height:1}
+  .wave{display:flex;align-items:center;gap:3px;height:28px;flex:1}
+  .wave i{flex:1;max-width:4px;border-radius:2px;background:var(--utilityred-100);opacity:.55}
+  .micsel{display:inline-flex;align-items:center;gap:7px;height:30px;padding:0 10px;border-radius:8px;border:1px solid var(--row-border);background:#fff;font-size:12px;color:var(--text-secondary)}
+  .steps{display:flex;flex-direction:column;gap:7px;margin:2px 0}
+  .step{display:flex;align-items:center;gap:9px;font-size:13px;color:var(--grey-r)}
+  .step i{width:18px;height:18px;border-radius:50%;display:grid;place-items:center;flex-shrink:0;border:2px solid var(--row-border);font-style:normal}
+  .step.done{color:var(--ink-r)} .step.done i{background:var(--success);border-color:var(--success)}
+  .step.on{color:var(--ink-r);font-weight:600} .step.on i{border-color:var(--busuublue-100);border-top-color:transparent;animation:spin 1s linear infinite}
+  @keyframes spin{to{transform:rotate(360deg)}}
+  .bigscore{display:flex;align-items:baseline;gap:8px}
+  .bigscore b{font-size:40px;font-weight:800;color:var(--busuublue-100);letter-spacing:-.02em;line-height:1;font-variant-numeric:tabular-nums}
+  .bigscore small{font-size:16px;color:var(--grey-r);font-weight:700}
+
+  .day{font-size:11px;font-weight:700;letter-spacing:.04em;text-transform:uppercase;color:var(--text-tertiary);margin:6px 0 4px}
+  .mrow{display:grid;grid-template-columns:58px minmax(0,1fr);gap:12px;align-items:center;padding:10px 4px;border-top:1px solid var(--row-border)}
+  .day+.mrow{border-top:0}
+  .mrow .tm{font-size:13px;font-weight:700;color:var(--text-secondary);font-variant-numeric:tabular-nums}
+  .mrow .tm small{display:block;font-size:11px;font-weight:500;color:var(--grey-r)}
+  .mrow .nm{font-size:13.5px;font-weight:600;color:var(--ink-r);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+  .mrow .mt{font-size:12px;color:var(--grey-r);margin-top:1px}
+  .mrow.isnow .tm{color:var(--busuublue-100)}
+  .bell{width:34px;height:34px;border-radius:8px;border:1px solid var(--row-border);background:#fff;display:grid;place-items:center;color:var(--grey-r)}
+  .bell[aria-pressed="true"]{color:var(--busuublue-100);background:var(--busuublue-5);border-color:var(--busuublue-20)}
+  .prow{display:grid;grid-template-columns:52px minmax(0,1fr) auto 30px;gap:12px;align-items:center;padding:10px 8px;border-radius:10px;border:1px solid transparent;cursor:pointer;text-align:left;width:100%;background:none}
+  .prow:hover{background:var(--neutral-5)}
+  .prow.sel{background:var(--busuublue-5);border-color:var(--busuublue-20)}
+  .prow .dt{font-size:12px;font-weight:700;color:var(--text-secondary);line-height:1.2}
+  .prow .dt small{display:block;font-size:11px;font-weight:500;color:var(--grey-r)}
+  .prow .nm{font-size:13.5px;font-weight:600;color:var(--ink-r);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+  .prow .mt{font-size:12px;color:var(--grey-r)}
+  .sc{display:inline-flex;align-items:baseline;gap:6px;font-variant-numeric:tabular-nums}
+  .sc b{font-size:17px;font-weight:800;color:var(--ink-r)}
+  .sc .d{font-size:11.5px;font-weight:700}
+  .d.up{color:var(--success-ink)} .d.dn{color:var(--amber-100)}
+  .more{position:relative}
+  .more>button{width:30px;height:30px;border-radius:8px;border:0;background:none;color:var(--grey-r);display:grid;place-items:center}
+  .more>button:hover{background:#e9ecf0}
+  .menu{position:absolute;right:0;top:32px;z-index:5;background:#fff;border-radius:10px;box-shadow:0 8px 24px -6px rgba(18,27,38,.28),0 0 0 1px var(--row-border);padding:6px;min-width:200px}
+  .menu.up{top:auto;bottom:32px}
+  .menu button{display:block;width:100%;text-align:left;border:0;background:none;border-radius:6px;padding:8px 10px;font-size:13px}
+  .menu button:hover{background:var(--neutral-5)}
+  .menu small{display:block;font-size:11.5px;color:var(--grey-r);padding:2px 10px 6px}
+  .prow.nofb{cursor:default}
+  .prow-x{grid-column:1/-1;display:flex;gap:10px;align-items:center;padding:4px 0 2px 64px}
+  .seg{display:inline-flex;background:#e9ecf0;border-radius:999px;padding:3px}
+  .seg button{height:26px;border:0;border-radius:999px;background:none;font-size:12px;font-weight:700;color:var(--text-tertiary);padding:0 11px}
+  .seg button[aria-pressed="true"]{background:#fff;color:var(--ink-r);box-shadow:0 1px 2px rgba(0,0,0,.12)}
+  .toast{position:absolute;left:50%;bottom:22px;transform:translateX(-50%);background:var(--text-primary);color:#fff;border-radius:10px;padding:10px 14px;font-size:13px;display:flex;align-items:center;gap:14px;box-shadow:0 10px 30px -8px rgba(0,0,0,.4);z-index:9}
+  .toast button{background:none;border:0;color:#9cc3ff;font-weight:700;font-size:13px;padding:0}
+
+  .notif{position:absolute;top:40px;right:14px;width:384px;z-index:10;background:linear-gradient(180deg,rgba(255,255,255,.97),rgba(244,247,252,.97));backdrop-filter:blur(14px);border-radius:20px;box-shadow:0 22px 48px -12px rgba(18,27,38,.45),0 0 0 .5px rgba(18,27,38,.14);overflow:hidden;color:var(--ink-r);animation:slidein .45s cubic-bezier(.2,.9,.3,1.2)}
+  @keyframes slidein{from{transform:translateX(30px);opacity:0}}
+  .notif::before{content:"";position:absolute;inset:0 0 auto 0;height:4px;background:linear-gradient(90deg,#116EEE,#5aa1ff 60%,#0EBE75)}
+  .notif .in{padding:16px 16px 14px}
+  .notif .hd{display:flex;align-items:center;gap:10px}
+  .appic{width:34px;height:34px;border-radius:9px;background:linear-gradient(150deg,#3d8bff,#116EEE 55%,#0b55c4);display:grid;place-items:center;color:#fff;box-shadow:inset 0 1px 0 rgba(255,255,255,.35),0 2px 6px -1px rgba(17,110,238,.5);flex-shrink:0}
+  .notif .hd .nm{flex:1;font-size:12px;font-weight:700;color:var(--text-secondary);letter-spacing:.01em}
+  .notif .hd .nm small{display:block;font-size:11px;font-weight:500;color:var(--grey-r)}
+  .notif .hd time{font-size:11px;color:var(--grey-r)}
+  .notif .live{display:inline-flex;align-items:center;gap:6px;margin-top:14px;height:22px;padding:0 9px 0 7px;border-radius:999px;background:var(--utilityred-5);color:var(--utilityred-100);font-size:11px;font-weight:700;letter-spacing:.03em;text-transform:uppercase;box-shadow:inset 0 0 0 1px var(--utilityred-20)}
+  .notif .live i{width:7px;height:7px;border-radius:50%;background:var(--utilityred-100);animation:pulse 1.4s infinite}
+  .notif .tt{display:block;font-size:17px;font-weight:700;line-height:1.3;margin-top:8px;color:var(--text-primary)}
+  .notif .mt{display:flex;align-items:center;gap:10px;margin-top:8px;font-size:12.5px;color:var(--grey-r)}
+  .notif .pb{display:inline-flex;align-items:center;gap:6px}
+  .notif .pb b{width:18px;height:18px;border-radius:5px;background:#5b5fc7;color:#fff;font-size:10px;font-weight:800;display:grid;place-items:center}
+  .avs{display:flex;margin-left:auto}
+  .avs span{width:24px;height:24px;border-radius:50%;border:2px solid #fff;margin-left:-7px;display:grid;place-items:center;font-size:10px;font-weight:700;color:#fff}
+  .avs span.more{background:var(--neutral-5);color:var(--text-tertiary)}
+  .notif .ac{display:grid;grid-template-columns:1.4fr 1fr;gap:8px;margin-top:16px}
+  .notif .ac button{height:40px;border-radius:10px;border:0;font-size:14px;font-weight:700;display:inline-flex;align-items:center;justify-content:center;gap:8px}
+  .notif .ac .p{background:var(--utilityred-100);color:#fff;box-shadow:0 4px 12px -4px rgba(226,34,46,.6)}
+  .notif .ac .p:hover{background:#c81c27}
+  .notif .ac .s{background:rgba(18,27,38,.06);color:var(--text-secondary)}
+  .notif .ac .s:hover{background:rgba(18,27,38,.1)}
+  .notif .ft{display:flex;align-items:center;gap:7px;padding:10px 16px;background:rgba(17,110,238,.06);border-top:1px solid rgba(17,110,238,.1);font-size:12px;color:var(--text-tertiary)}
+  .notif .ft svg{color:var(--busuublue-100);flex-shrink:0}
+  .notif-wrap .tag{position:absolute;top:-20px;right:6px;font:600 10px/1 var(--mono);letter-spacing:.06em;text-transform:uppercase;color:#6d6d72}
+  .notif-wrap{position:absolute;top:92px;right:14px;z-index:10}
+  .notif-wrap .notif{position:relative;top:0;right:0}
+
+  .mrow .mbtn{min-width:0;display:block}
+  .uphint{margin:-4px 0 6px;font-size:12px;color:var(--grey-r)}
+  .mrow .pbtn{margin-top:7px;height:28px;color:var(--cta,#116EEE);border-color:var(--busuublue-20,#cfe0fb);background:#fff}
+  .mrow .noprac{display:block;margin-top:6px}
+  .mrow .noprac{font-size:11.5px;color:var(--grey-r)}
+  .mrow .mbtn:focus-visible{outline:2px solid var(--busuublue-100);outline-offset:2px}
+  .mrow.open{background:var(--busuublue-5);border-radius:10px;border-top-color:transparent;padding-inline:10px;margin-inline:-6px}
+  .mrow.open+.mrow{border-top-color:transparent}
+  .mx{grid-column:1/-1;display:flex;flex-direction:column;gap:10px;padding:2px 0 4px}
+  .mx .who{font-size:12px;color:var(--grey-r)}
+  .prep{display:grid;grid-template-columns:32px minmax(0,1fr);align-items:center;gap:10px 12px;background:#fff;border:1px solid var(--busuublue-20);border-radius:10px;padding:10px 12px}
+  .prep .ic{width:32px;height:32px;border-radius:9px;background:var(--busuublue-100);display:grid;place-items:center;flex-shrink:0}
+  .prep .tx{min-width:0}
+  .prep .btn{grid-column:1/-1;justify-content:center}
+  .prep b{display:block;font-size:13px;font-weight:700;color:var(--ink-r)}
+  .prep small{display:block;font-size:11.5px;color:var(--grey-r)}
+  .noprep{font-size:12px;color:var(--grey-r);font-style:italic}
+
+  .pr{background:#fff}
+  .rd{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:10px;text-align:center;padding:40px;background:#fff;min-height:420px}
+  .rd .rd-sp{width:56px;height:56px;border-radius:50%;border:5px solid #dbe7fb;border-top-color:#116EEE;animation:rdspin .9s linear infinite;margin-bottom:14px}
+  @keyframes rdspin{to{transform:rotate(360deg)}}
+  .rd h2{margin:0;font-size:24px;font-weight:700;color:#1b1f27}
+  .rd p{margin:0;font-size:15px;color:#4b5563;max-width:460px;line-height:1.5}
+  .rd p b{color:#1b1f27}
+  .rd .rd-bar{width:260px;height:6px;border-radius:99px;background:#e5eaf2;overflow:hidden;margin-top:14px}
+  .rd .rd-bar i{display:block;height:100%;width:0;background:#116EEE;border-radius:99px;animation:rdbar 2.3s ease-out forwards}
+  @keyframes rdbar{to{width:100%}}
+  .rd button{all:unset;cursor:pointer;margin-top:16px;font-size:13px;font-weight:700;color:#116EEE;text-decoration:underline}
+  .ext{flex-shrink:0;opacity:.8}
+  .pr-top{display:flex;align-items:center;justify-content:center;position:relative;padding:12px 24px 0;flex-shrink:0}
+  .pr-x{position:absolute;left:20px;top:4px;width:32px;height:32px;border-radius:50%;border:0;background:none;color:var(--grey-r);display:flex;align-items:center;justify-content:center}
+  .pr-x:hover{background:var(--neutral-5)}
+  .pr-bar{width:500px;height:12px;border-radius:999px;background:#dde3ea;overflow:hidden}
+  .pr-bar i{display:block;height:100%;background:var(--success);border-radius:999px;transition:width .3s}
+  .pr-main{flex:1;min-height:0;overflow-y:auto;display:flex;flex-direction:column;align-items:center;padding:36px 24px 24px}
+  .pr-title{font-size:20px;font-weight:700;color:var(--text-primary)}
+  .pr-goal{display:flex;align-items:center;gap:8px;font-size:14px;color:var(--text-secondary);margin-top:8px}
+  .pr-from{display:flex;align-items:center;gap:8px;flex-wrap:wrap;justify-content:center;font-size:12px;color:var(--grey-r);margin-top:10px}
+  .pr-from .pill{height:20px;font-size:10.5px}
+  .pr-chat{width:560px;display:flex;flex-direction:column;gap:12px;margin-top:24px}
+  .pr-ai{background:#F3F3F5;border-radius:12px;padding:20px 24px 14px;font-size:16px;line-height:1.5;color:var(--text-secondary);align-self:stretch}
+  .pr-ai .spk{display:inline-flex;margin-top:14px;color:var(--busuublue-100);background:none;border:0;padding:4px}
+  .pr-me{align-self:flex-end;max-width:460px;background:var(--busuublue-100);color:#fff;border-radius:12px;padding:14px 18px;font-size:16px;line-height:1.5}
+  .pr-fb{align-self:flex-end;display:inline-flex;align-items:center;gap:6px;font-size:12.5px;font-weight:600;color:var(--success-ink);background:var(--lime-5);box-shadow:inset 0 0 0 1px var(--lime-20);border-radius:999px;padding:4px 10px 4px 6px;margin-top:-4px}
+  .pr-fb .ck{width:16px;height:16px;border-radius:50%;background:var(--success);display:grid;place-items:center}
+  .pr-foot{flex-shrink:0;border-top:1px solid var(--row-border);display:flex;flex-direction:column;align-items:center;gap:10px;padding:26px 0 24px}
+  .pr-mic{width:84px;height:84px;border-radius:50%;border:2px solid var(--busuublue-100);background:#fff;color:var(--busuublue-100);display:flex;align-items:center;justify-content:center}
+  .pr-mic:hover{background:var(--busuublue-5)}
+  .pr-mic.rec{background:var(--busuublue-100);color:#fff;box-shadow:0 0 0 10px rgba(17,110,238,.14)}
+  .pr-hint{font-size:14px;color:var(--text-secondary)}
+  @media (prefers-reduced-motion:reduce){.notif,.notif .live i{animation:none}}
+
+  .sum{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px}
+  .sum>div{background:#fff;border-radius:12px;padding:12px 14px}
+  .sum .v{font-size:24px;font-weight:800;color:var(--ink-r);line-height:1.1;font-variant-numeric:tabular-nums;margin-top:4px}
+  .sum .v small{font-size:12px;font-weight:700;margin-left:4px}
+  .sum .s{font-size:12px;color:var(--grey-r);margin-top:2px}
+
+  .chips{display:flex;gap:6px;flex-wrap:wrap}
+  .chip{height:28px;border-radius:999px;border:1px solid var(--row-border);background:#fff;padding:0 11px;font-size:12px;font-weight:700;color:var(--text-tertiary);display:inline-flex;align-items:center;gap:6px}
+  .chip b{font-variant-numeric:tabular-nums;color:var(--ink-r)}
+  .chip[aria-pressed="true"]{border-color:var(--dimline);color:var(--dimline);background:#fdf2f7}
+  .chip.ov[aria-pressed="true"]{border-color:var(--busuublue-100);color:var(--busuublue-100);background:var(--busuublue-5)}
+  .legend{display:flex;gap:14px;font-size:11.5px;color:var(--grey-r);margin:10px 0 2px}
+  .legend span{display:inline-flex;align-items:center;gap:6px}
+  .legend i{width:16px;height:0;border-top:2px solid var(--busuublue-100);display:inline-block}
+  .legend i.dm{border-top:2px dashed var(--dimline)}
+  .legend i.up{width:9px;height:9px;border:1.5px dashed var(--neutral-100);border-radius:50%}
+  .chart{position:relative}
+  .chart svg{display:block;overflow:visible}
+  .chart text{font-family:inherit}
+  .tip{position:absolute;pointer-events:none;background:var(--text-primary);color:#fff;border-radius:8px;padding:8px 10px;font-size:12px;line-height:1.45;min-width:170px;transform:translate(-50%,calc(-100% - 12px));white-space:nowrap;z-index:4}
+  .tip b{font-weight:700}
+  .tip .r{display:flex;justify-content:space-between;gap:14px;font-variant-numeric:tabular-nums}
+  .tip .k{display:inline-block;width:10px;height:0;border-top:2px solid #6ea8ff;margin-right:6px;vertical-align:middle}
+  .tip .k.dm{border-top:2px dashed #f38cb8}
+  .hit{fill:transparent;cursor:pointer}
+  .dimgrid{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:8px;margin-top:12px}
+  .dimc{border:1px solid var(--row-border);border-radius:10px;background:#fff;padding:9px 10px;text-align:left}
+  .dimc:hover{border-color:#c9d3df}
+  .dimc[aria-pressed="true"]{border-color:var(--dimline);box-shadow:inset 0 0 0 1px var(--dimline)}
+  .dimc .n{font-size:12px;font-weight:700;color:var(--text-secondary)}
+  .dimc .v{font-size:20px;font-weight:800;color:var(--ink-r);font-variant-numeric:tabular-nums;line-height:1.2;margin-top:2px}
+  .dimc .s{font-size:11px;color:var(--grey-r)}
+
+  .cats{display:flex;flex-direction:column;gap:8px}
+  .cat{--cc:#116EEE;--ct:#f1f6fe;border:1px solid var(--row-border);border-radius:12px;background:#fff;overflow:hidden}
+  .cat.open{background:var(--ct);border-color:transparent}
+  .cat-h{display:grid;grid-template-columns:30px minmax(0,1fr) 150px 12px;gap:12px;align-items:center;width:100%;background:none;border:0;padding:12px 14px;text-align:left}
+  .cat-ic{width:30px;height:30px;border-radius:8px;background:var(--cc);color:#fff;font-size:13px;font-weight:700;display:flex;align-items:center;justify-content:center}
+  .cat-nm{display:block;font-size:14px;font-weight:600;line-height:1.3;color:var(--ink-r)}
+  .cat-n{display:block;font-size:12px;color:var(--grey-r);margin-top:1px}
+  .bar{height:6px;border-radius:3px;background:var(--neutral-5);overflow:hidden}
+  .bar i{display:block;height:100%;border-radius:3px;background:var(--cc,var(--busuublue-100))}
+  .num{font-size:16px;font-weight:800;color:var(--ink-r);text-align:right;font-variant-numeric:tabular-nums}
+  .chev{color:var(--grey-r);font-size:12px;transition:transform .15s;justify-self:end}
+  .cat-h[aria-expanded="true"] .chev{transform:rotate(90deg)}
+  .cat-b{padding:0 8px 8px;display:flex;flex-direction:column;gap:4px}
+  .caprow{display:grid;grid-template-columns:minmax(0,1fr) 150px 10px;gap:12px;align-items:center;width:100%;background:#fff;border:0;border-radius:8px;padding:9px 10px;text-align:left;font-size:13px}
+  .caprow:hover{box-shadow:inset 0 0 0 1px var(--cc)}
+  .caprow[aria-current="true"]{box-shadow:inset 0 0 0 2px var(--cc)}
+  .caprow .cn{font-weight:500;color:var(--ink-r)}
+  .caprow .cn small{display:block;font-size:11px;color:var(--grey-r);font-weight:400}
+  .caprow .num{font-size:13.5px}
+  .gs{font-size:11px;font-weight:700;color:var(--grey-r);text-align:right;grid-column:2/3;white-space:nowrap}
+
+  .cd-back{background:none;border:0;padding:0;font-size:13px;color:var(--grey-r);display:inline-flex;align-items:center;gap:6px;align-self:flex-start}
+  .cd-hd{display:flex;align-items:flex-start;gap:16px}
+  .cd-hd .tx{flex:1;min-width:0}
+  .cd-hd h3{margin:4px 0 0;font-size:19px;font-weight:700;line-height:1.25}
+  .cd-cats{display:flex;gap:6px;flex-wrap:wrap;margin-top:8px}
+  .cd-cat{display:inline-flex;align-items:center;gap:6px;height:22px;padding:0 9px 0 6px;border-radius:999px;background:var(--neutral-5);font-size:11.5px;font-weight:600;color:var(--text-secondary)}
+  .cd-cat i{width:9px;height:9px;border-radius:3px;display:inline-block}
+  .cd-score{text-align:right}
+  .lv{display:flex;align-items:center;gap:8px;justify-content:flex-end}
+  .lvm{display:inline-grid;grid-template-columns:repeat(3,18px);gap:3px}
+  .lvm i{display:block;height:6px;border-radius:2px;background:var(--neutral-5);overflow:hidden}
+  .lvm b{display:block;height:100%;background:var(--cc,var(--busuublue-100))}
+  .lvn{font-size:12px;font-weight:700;color:var(--ink-r);min-width:68px;text-align:left}
+  .lv.big .lvm{grid-template-columns:repeat(3,30px);gap:4px}
+  .lv.big .lvm i{height:8px}
+  .cd-score .lvl-w{display:block;font-size:24px;font-weight:800;line-height:1;color:var(--ink-r);margin-bottom:8px}
+  .cd-score b{display:block;font-size:36px;font-weight:800;line-height:1;color:var(--ink-r);font-variant-numeric:tabular-nums}
+  .cd-score small{display:block;font-size:11.5px;color:var(--grey-r);margin-top:4px}
+  .how{background:var(--busuublue-5);border-radius:10px;padding:12px 14px;font-size:13px;color:var(--body-r);line-height:1.5}
+  .how b{color:var(--ink-r)}
+  .kc{display:grid;grid-template-columns:76px minmax(0,1fr) 150px;gap:12px;align-items:center;padding:9px 2px;border-top:1px solid var(--row-border)}
+  .sec-h+.kc,.day+.kc{border-top:0}
+  .kt{font-size:10.5px;font-weight:700;letter-spacing:.03em;text-transform:uppercase;color:var(--text-tertiary);background:var(--neutral-5);border-radius:5px;padding:2px 6px;justify-self:start}
+  .kn{font-size:13px;font-weight:600;color:var(--ink-r)}
+  .kn small{display:block;font-size:11.5px;font-weight:400;color:var(--grey-r)}
+  .kc.unseen .kn{color:var(--grey-r);font-weight:500}
+  .mo{display:grid;grid-template-columns:18px minmax(0,1fr) auto;gap:10px;align-items:flex-start;padding:10px 2px;border-top:1px solid var(--row-border)}
+  .sec-h+.mo{border-top:0}
+  .mo .q{font-size:13px;color:var(--text-secondary);line-height:1.45}
+  .mo .w{font-size:11.5px;color:var(--grey-r);margin-top:3px}
+  .mo .ic{width:18px;height:18px;border-radius:50%;display:grid;place-items:center;margin-top:1px}
+  .mo .ic.good{background:var(--success)} .mo .ic.fix{background:var(--amber-120)}
+
+  .empty{font-size:13px;color:var(--grey-r);padding:18px 4px;text-align:center}
+  @media (prefers-reduced-motion:reduce){.recbar .rd,.step.on i{animation:none}.chev{transition:none}}
+  .bigscore{flex-direction:column;align-items:flex-end;gap:4px;flex-shrink:0;text-align:right}
+  .bigscore small{font-size:11.5px;white-space:nowrap}
+</style>
+</head><body>
+<main class="stage" id="stage"></main>
+
+<script>
+function openEval(){if(window.parent!==window)window.parent.postMessage({open:'eval'},'*');return false;}
+const I={
+  ext:'<svg class="ext" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M7 17 17 7M8 7h9v9"/></svg>',
+  bell:'<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 16V11a6 6 0 1 1 12 0v5l1.5 2h-15z"/><path d="M10 20.5a2 2 0 0 0 4 0"/></svg>',
+  belloff:'<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 16V11a6 6 0 0 1 9.5-4.9M18 11v5l1.5 2H8"/><path d="M10 20.5a2 2 0 0 0 4 0M4 4l16 16"/></svg>',
+  dots:'<svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><circle cx="5" cy="12" r="1.8"/><circle cx="12" cy="12" r="1.8"/><circle cx="19" cy="12" r="1.8"/></svg>',
+  rec:'<svg width="12" height="12" viewBox="0 0 24 24"><circle cx="12" cy="12" r="8" fill="currentColor"/></svg>',
+  stop:'<svg width="12" height="12" viewBox="0 0 24 24"><rect x="5" y="5" width="14" height="14" rx="2" fill="currentColor"/></svg>',
+  mic:'<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><rect x="9" y="3" width="6" height="11" rx="3"/><path d="M5.5 11a6.5 6.5 0 0 0 13 0M12 17.5V21"/></svg>',
+  down:'<svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round"><path d="M6 9l6 6 6-6"/></svg>',
+  check:'<svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="3.4" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12.5l4.5 4.5L19 7"/></svg>',
+  bang:'<svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="3.4" stroke-linecap="round"><path d="M12 6v8M12 18.5v.5"/></svg>',
+  ext:'<svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M14 4h6v6M20 4l-9 9M18 14v5a1 1 0 0 1-1 1H5a1 1 0 0 1-1-1V7a1 1 0 0 1 1-1h5"/></svg>',
+  x:'<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><path d="M6 6l12 12M18 6L6 18"/></svg>',
+  spk:'<svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linejoin="round" stroke-linecap="round"><path d="M4 9.5h3.5L12 5.5v13l-4.5-4H4z"/><path d="M15.5 9a4 4 0 0 1 0 6M18 6.5a7.5 7.5 0 0 1 0 11"/></svg>',
+  micL:'<svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><rect x="9" y="3" width="6" height="11" rx="3"/><path d="M5.5 11a6.5 6.5 0 0 0 13 0M12 17.5V21"/></svg>',
+  micW:'<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.2" stroke-linecap="round"><rect x="9" y="3" width="6" height="11" rx="3"/><path d="M5.5 11a6.5 6.5 0 0 0 13 0M12 17.5V21"/></svg>',
+  chat:'<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.2" stroke-linejoin="round"><path d="M4 5h16v11H9l-5 4z"/><path d="M9 10.5h.01M12 10.5h.01M15 10.5h.01" stroke-width="2.8" stroke-linecap="round"/></svg>',
+  shield:'<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linejoin="round"><path d="M12 3l8 3v6c0 4.5-3.4 8-8 9-4.6-1-8-4.5-8-9V6z"/><path d="M8.5 12l2.5 2.5 4.5-5" stroke-linecap="round"/></svg>',
+  back:'<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><path d="M15 5l-7 7 7 7"/></svg>'
+};
+const esc=s=>String(s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+
+const DIMS=[['rng','Range'],['acc','Accuracy'],['flu','Fluency'],['cla','Clarity'],['rel','Relevance']];
+const PLAT={teams:['T','Teams'],meet:['M','Google Meet'],zoom:['Z','Zoom']};
+const CALLS=[
+ {id:'c1',day:'Wed 26 Aug',t:'Weekly team sync',len:30,plat:'teams',dims:{rng:60,acc:70,flu:41,cla:50,rel:74}},
+ {id:'c2',day:'Wed 2 Sep',t:'Weekly team sync',len:32,plat:'teams',dims:{rng:62,acc:72,flu:45,cla:52,rel:79}},
+ {id:'c3',day:'Tue 8 Sep',t:'1:1 with Maya',len:25,plat:'teams',dims:{rng:64,acc:74,flu:50,cla:58,rel:80}},
+ {id:'c4',day:'Wed 16 Sep',t:'Kickoff with the Events team',len:45,plat:'meet',dims:{rng:66,acc:71,flu:44,cla:54,rel:75}},
+ {id:'cx',day:'Mon 21 Sep',t:'Dentist rescheduling call',len:6,plat:'zoom',dims:{rng:58,acc:66,flu:40,cla:49,rel:70}},
+ {id:'c5',day:'Wed 23 Sep',t:'Weekly team sync',len:31,plat:'teams',dims:{rng:70,acc:78,flu:52,cla:60,rel:84}},
+ {id:'c6',day:'Wed 30 Sep',t:'Review: agenda draft',len:40,plat:'meet',dims:{rng:72,acc:80,flu:58,cla:63,rel:85}},
+ {id:'cs',day:'Thu 1 Oct',t:'Catch-up with Sofía',len:22,plat:'zoom',status:'not_evaluable',lang:'Spanish'},
+ {id:'c7',day:'Wed 7 Oct',t:'1:1 with Maya',len:28,plat:'teams',dims:{rng:68,acc:76,flu:46,cla:55,rel:80}},
+ {id:'c8',day:'Wed 14 Oct',t:'Team offsite planning',len:35,plat:'teams',dims:{rng:72,acc:80,flu:48,cla:57,rel:84}}
+];
+const NEWCALL={id:'c9',day:'Thu 15 Oct',t:'Weekly team sync',len:31,plat:'teams',dims:{rng:72,acc:80,flu:48,cla:57,rel:84}};
+const UPCOMING=[
+ {id:'u1',g:'Today · Thu 15 Oct',tm:'11:00',end:'11:30',t:'Weekly team sync',plat:'teams',ppl:6,now:true},
+ {id:'u2',g:'Today · Thu 15 Oct',tm:'14:00',end:'14:30',t:'1:1 with Maya',plat:'teams',ppl:2},
+ {id:'u3',g:'Today · Thu 15 Oct',tm:'16:30',end:'17:00',t:'Budget review with Finance',plat:'meet',ppl:9},
+ {id:'u4',g:'Tomorrow · Fri 16 Oct',tm:'09:30',end:'10:00',t:'Venue check-in with Daniel',plat:'teams',ppl:3},
+ {id:'u5',g:'Tomorrow · Fri 16 Oct',tm:'12:00',end:'12:45',t:'Comida y charla (Spanish team lunch)',plat:'zoom',ppl:12,off:true,lang:'Spanish'},
+ {id:'u6',g:'Mon 19 Oct',tm:'11:00',end:'11:30',t:'Weekly team sync',plat:'teams',ppl:6}
+];
+const WHO={u1:'Maya, Daniel, Nora and 3 others',u2:'Maya',u3:'Ravi, Ines and 7 others from Finance',u4:'Daniel, Chloe',u5:'Sofía, Mateo and 10 others',u6:'Maya, Daniel, Nora and 3 others'};
+const SYNC={title:'Weekly team sync: your update',goal:'Give a 30-second update. Say where things stand first.',ai:'Morning! Before we go round the table, can you give us a quick update on the offsite?',me:'Quick update: the venue is booked, the budget is approved, and two speakers are interested. Next is a call with one of them on Monday.',fb:'Clear and in order. You led with where things stand.'};
+const PREP={u1:SYNC,u6:SYNC,
+ u2:{title:'1:1 with Maya: agree the offsite plan',goal:'Make one clear request she can say yes to.',ai:'So, where are we with the offsite? Is there anything you need from me?',me:'Yes, one thing. Could you introduce me to the finance team this week, so we can get the deposit approved?',fb:'A direct request with a reason. Easy to say yes to.'},
+ u3:{title:'Ask Finance for approval',goal:'Say what you need in one sentence, then take a question.',ai:'Thanks for joining. So in a nutshell, what do you need from the budget?',me:'We need a deposit approved this week, so we can confirm the venue before the dates go.',fb:'One sentence, plain words. A strong opening.'},
+ u4:{title:'Venue check-in with Daniel',goal:'Sum up progress, then ask what’s blocking him.',ai:'Hi! I’ve only got 15 minutes. Where are we with the venue?',me:'In short: it’s booked and the deposit is paid. What’s getting in your way on the catering side?',fb:'Short summary, then a clear question.'}};
+const ov=c=>Math.round(DIMS.reduce((a,[k])=>a+c.dims[k],0)/DIMS.length);
+
+const CATS={1:'Presenting and conveying ideas',2:'Engaging in conversation',3:'Making and managing requests',4:'Reasoning and communicating a position',5:'Connecting and building rapport'};
+const CATCOL={1:['#116EEE','#f1f6fe'],2:['#7c3aed','#f6f2fe'],3:['#0d9488','#eefaf8'],4:['#db2777','#fdf2f7'],5:['#475569','#f2f4f7']};
+const CAT_DELTA={1:3,2:5,3:2,4:-1,5:4};
+const CAPS=[
+ {n:'Giving an opinion',cats:[1,2],kcs:[['Function','Expressing opinions',7,4,63],['Function','Expressing preferences',2,2,74],['Function','Hedging and qualifying statements',4,2,55],['Function','Expressing likes and dislikes',0,0,0]],
+  moms:[["c8","07:46","good","I’m not in the conversations you are, but my sense is…"],["c8","21:26","fix","Yeah, I think, yeah, I think that’s, that’s, that’s the point…"],["c6","18:20","good","I’d keep the first agenda. It’s the one people were most excited about."],["c5","07:10","fix","I mean it’s, it could be, maybe, I don’t know, worth trying?"]]},
+ {n:'Supporting a point',cats:[1],kcs:[['Function','Giving examples to support a point',3,3,80],['Function','Expressing achievement and success',2,2,76]],
+  moms:[["c8","13:05","good","Have you used a hotel booking app where you add your preferences? It’s very similar."],["c6","22:40","good","Last week three people asked for exactly this, so it’s worth the space."],["c3","11:05","good","For example, only twelve people replied to the last survey."]]},
+ {n:'Explaining and clarifying',cats:[1,2,3],kcs:[['Function','Explaining how a service works',5,3,64],['Function','Asking for clarification',2,2,76],['Function','Rephrasing your own point',3,1,52]],
+  moms:[["c8","02:26","fix","I regret not booking earlier in the summer…"],["c8","11:47","good","Yes, the company pays. We’ve built that into the budget…"],["c4","20:10","good","So in short: it’s two nights, and everything is covered except travel."]]},
+ {n:'Structuring your presentation',cats:[1],kcs:[['Function','Highlighting key points',1,1,66],['Function','Opening a presentation',1,0,48],['Function','Transitioning between presentation points',0,0,0]],
+  moms:[["c6","01:30","good","Three things today: the venue, the budget and the agenda."],["c4","02:15","fix","So, um, where do I start, I guess the, the main thing is…"]]},
+ {n:'Agreeing and disagreeing',cats:[2,4],kcs:[['Function','Agreeing with an opinion',4,4,86],['Function','Disagreeing with an opinion',2,2,76]],
+  moms:[["c8","19:48","good","I think it’s a good idea what you just said, Daniel, to have some kind of changelog."],["c5","15:30","good","I see it differently. I’d ask five people before we book it."],["c7","06:45","good","Yes, that’s fair. Let’s go with your version."]]},
+ {n:'Managing discussion',cats:[2],kcs:[['Function','Introducing a discussion point',3,3,78],['Function','Inviting final contributions',1,1,70]],
+  moms:[["c8","02:28","good","Sure. All right. So let me take the points in order."],["c2","00:45","good","First on the list is the budget."],["c6","34:10","good","Anything else before we wrap up?"]]},
+ {n:'Managing the flow of conversation',cats:[2,4],kcs:[['Function','Managing interruptions',3,1,48],['Function','Managing turn-taking in discussion',3,2,66],['Function','Changing the topic in conversation',1,1,66]],
+  moms:[["c4","30:20","fix","Sorry, sorry, go, no, you go, sorry."],["c7","12:10","fix","Yeah but, but, can I just, just one thing…"],["c5","19:40","good","Good point. Can we come back to that after the budget?"]]},
+ {n:'Making requests and offers',cats:[3,4],kcs:[['Function','Making requests',4,1,44],['Function','Offering something',2,2,72],['Function','Asking for permission',0,0,0]],
+  moms:[["c8","18:34","fix","Maybe we just need to set up like, here’s like, if anything is going to change…"],["c3","17:30","fix","If it’s possible, maybe, could someone maybe look at the menu?"],["c6","09:15","good","I can draft the invite if that helps."]]},
+ {n:'Dealing with problems and incidents',cats:[3,5],kcs:[['Function','Reporting an incident',3,1,48],['Function','Asking for support and guidance',2,1,62]],
+  moms:[["c8","05:38","fix","So this is something with the rail line where, um, there are engineering works…"],["c2","21:00","fix","There’s a thing, a problem, with the, the booking, I think, maybe the dates."],["c4","12:40","good","The payment failed twice this morning. Could Daniel take a look?"]]},
+ {n:'Scheduling and coordinating',cats:[3],kcs:[['Function','Checking in on progress',3,2,66],['Function','Deferring and following up',2,2,74],['Function','Scheduling and arranging meetings',0,0,0]],
+  moms:[["c7","24:00","good","Let’s pick this up on Thursday once the venue is confirmed."],["c5","28:10","good","Where are we with the catering numbers?"],["c3","02:50","fix","So we, we have to see when, which day is, is good for the, for everybody."]]},
+ {n:'Reporting and summarising',cats:[4],kcs:[['Function','Summarising information in discussion',4,2,60],['Function','Summarising before responding',3,1,50],['Function','Reflecting on and reviewing outcomes',1,1,62]],
+  moms:[["c8","20:32","fix","Um, someone from marketing has shown some interest. Um, I’m trying to set up a call…"],["c7","03:20","fix","So there was the thing with the venue and then also the, the menu, and…"],["c5","01:10","good","Quick summary: venue is booked, budget is approved, agenda is next."]]},
+ {n:'Explaining background and situation',cats:[4,1,5],kcs:[['Function','Describing work responsibilities and conditions',4,1,40],['Function','Describing professional background',1,1,60],['Function','Talking about work experience',2,2,72],['Grammar','Relative clauses (which, that)',4,2,52],['Vocabulary','Neutral workplace words',2,0,40],['Function','Talking about strengths and weaknesses',0,0,0]],
+  moms:[["c8","10:33","fix","So we’re working on upgrading some of them to single rooms works right now and…"],["c8","29:47","fix","…without going through the whole procurement process, which is pretty lame."],["c7","08:20","fix","Because before, when we had the, the old venue which was, it was in the city…"],["c6","12:05","good","I organised the sales kickoff for two years, so I’ve seen this go wrong."],["c5","04:40","fix","The reason is that the, the team that did it, they are, it was in the other office…"]]},
+ {n:'Evaluating and deciding',cats:[4,2],kcs:[['Function','Weighing up options',1,1,64],['Function','Making a decision',1,0,46]],
+  moms:[['c6','30:00','good','Option B is slower but safer, so I’d go with B.'],['c4','38:10','fix','I don’t know, both are, both have, it depends, maybe.']]},
+ {n:'Maintaining relationships',cats:[5,1],kcs:[['Function','Narrating past events and experiences',3,3,80],['Function','Making small talk',4,4,86]],
+  moms:[["c8","00:28","good","We were supposed to go hiking, but it rained the whole time…"],["c8","27:12","good","I’ll leave it to you. If you feel we should cancel it, no hard feelings."],["c3","00:30","good","How was the trip? Did you get any sun in the end?"]]},
+ {n:'Starting and ending interactions',cats:[5,2],kcs:[['Function','Getting a meeting started',3,2,72],['Function','Closing a conversation',3,3,80]],
+  moms:[['c2','00:20','good','Morning all, let’s get going. We’ve got a lot to cover.'],['c5','30:50','good','Great, thanks everyone. I’ll send notes after.'],['c7','27:40','fix','Okay so, yeah, I think that’s, that’s it, I guess, or…']]}
+];
+const MIN_MOMENTS=3;
+CAPS.forEach(c=>{const seen=c.kcs.filter(k=>k[2]>0);c.ready=c.moms.length>=MIN_MOMENTS;c.score=c.ready?Math.round(seen.reduce((a,k)=>a+k[4],0)/seen.length):null;c.calls=new Set(c.moms.map(m=>m[0])).size;});
+const capsIn=i=>CAPS.filter(c=>c.cats.includes(i));
+const catScore=i=>{const s=capsIn(i).filter(c=>c.ready);return s.length?Math.round(s.reduce((a,c)=>a+c.score,0)/s.length):null;};
+const LEVELS=['Developing','Functional','Mastering'],LV_CUT=[0,65,85,101];
+const lvOf=v=>v>=85?2:v>=65?1:0;
+function lvMeter(v,o){o=o||{};const L=lvOf(v);
+  const segs=[0,1,2].map(i=>'<i><b style="width:'+(i<L?100:i>L?0:Math.max(10,Math.round((v-LV_CUT[i])/(LV_CUT[i+1]-LV_CUT[i])*100)))+'%"></b></i>').join('');
+  return '<span class="lv'+(o.big?' big':'')+'" title="'+LEVELS[L]+(L<2?' · on the way to '+LEVELS[L+1]:'')+'"><span class="lvm" aria-hidden="true">'+segs+'</span>'+(o.noLabel?'':'<span class="lvn">'+LEVELS[L]+'</span>')+'</span>';}
+const callById=id=>CALLS.find(c=>c.id===id)||(id===NEWCALL.id?NEWCALL:null);
+
+const S={tab:'meet',rec:'idle',dim:null,openCat:4,cap:null,archived:['cx'],pastView:'recent',menu:null,sel:null,prompt:{u1:true,u2:true,u3:true,u4:true,u5:true,u6:true},toast:null,secs:754,upSel:null,practice:null,pst:'idle'};
+S.detect='gen';
+const GEN_T='Call at 11:02';
+const callT=c=>c.id===NEWCALL.id&&S.detect==='gen'?GEN_T:c.t;
+const pastCalls=()=>{const l=CALLS.slice();if(S.rec==='ready'||S.rec==='proc')l.push(NEWCALL);return l;};
+const scored=()=>pastCalls().filter(c=>c.dims&&!S.archived.includes(c.id)&&!(c.id===NEWCALL.id&&S.rec!=='ready'));
+
+function platIc(p){return '<span class="plat '+p+'" aria-hidden="true">'+PLAT[p][0]+'</span>';}
+function nowCard(){
+  const u=UPCOMING[0],last=scored().filter(c=>c.id!==NEWCALL.id).slice(-1)[0],gen=S.detect==='gen',ut=gen?GEN_T:u.t;
+  if(S.rec==='prompt'&&gen)return '<div class="now live"><div class="now-top"><span class="plat" style="background:var(--busuublue-100)" aria-hidden="true">'+I.micW+'</span><div class="tx"><div class="now-k"><span class="livedot"></span>Meeting detected</div><div class="now-t">Looks like you’re in a meeting</div><div class="now-m">Your microphone is in use. Record this call to get feedback on it.</div></div></div>'+
+    '<div class="now-acts"><button class="btn rec" onclick="act.start()">'+I.rec+'Record this call</button><button class="btn ghost" onclick="act.skip()">Not this one</button><span class="hint" style="margin-left:auto">Remember to let everyone know you’re recording.</span></div></div>';
+  if(S.rec==='prompt')return '<div class="now live"><div class="now-top">'+platIc(u.plat)+'<div class="tx"><div class="now-k"><span class="livedot"></span>Happening now</div><div class="now-t">'+u.t+'</div><div class="now-m">'+u.tm+'–'+u.end+' · '+PLAT[u.plat][1]+' · '+u.ppl+' people</div></div></div>'+
+    '<div class="now-acts"><button class="btn rec" onclick="act.start()">'+I.rec+'Record this call</button><button class="btn ghost" onclick="act.skip()">Not this one</button><span class="hint" style="margin-left:auto">Remember to let everyone know you’re recording.</span></div></div>';
+  if(S.rec==='rec')return '<div class="now recording"><div class="now-top"><div class="tx"><div class="now-k">'+I.rec+'Recording</div><div class="now-t">'+ut+'</div></div><div class="timer" id="rectime">'+fmt(S.secs)+'</div></div>'+
+    '<div class="now-acts"><div class="wave" aria-hidden="true">'+Array.from({length:44},(_,i)=>'<i style="height:'+(6+Math.round(20*Math.abs(Math.sin(i*1.7)*Math.cos(i*.45))))+'px"></i>').join('')+'</div></div>'+
+    '<div class="now-acts"><button class="btn rec" onclick="act.stop()">'+I.stop+'Stop recording</button><button class="btn ghost" onclick="act.cancel()">Cancel</button><span class="micsel" style="margin-left:auto">'+I.mic+'MacBook Pro Microphone '+I.down+'</span></div></div>';
+  if(S.rec==='proc')return '<div class="now"><div class="now-top"><div class="tx"><div class="now-k">Getting your feedback ready</div><div class="now-t">'+ut+'</div><div class="now-m">Recorded 31 min · usually ready in 2–3 minutes. You can close this window.</div></div></div>'+
+    '<div class="steps"><div class="step done"><i>'+I.check+'</i>Recording saved</div><div class="step done"><i>'+I.check+'</i>Uploaded</div><div class="step on"><i></i>Analysing your English</div><div class="step"><i></i>Feedback ready</div></div>'+
+    '</div>';
+  if(S.rec==='ready'){const s=ov(NEWCALL),d=s-ov(last);
+    return '<div class="now ready"><div class="now-top"><div class="tx"><div class="now-k">Your feedback is ready</div><div class="now-t">'+callT(NEWCALL)+'</div><div class="now-m">Today · 31 min</div></div>'+
+    '<div class="bigscore"><b>'+s+'</b><small>/100 communication score</small></div></div>'+
+    '<div class="now-acts"><a class="btn pri" href="#" onclick="return openEval()">View feedback →</a><span class="hint" style="margin-left:auto"><span class="d '+(d>=0?'up':'dn')+'" style="font-weight:700">'+(d>=0?'↑ ':'↓ ')+Math.abs(d)+'</span> on your last call</span></div></div>';}
+  return '<div class="now"><div class="now-top">'+platIc(u.plat)+'<div class="tx"><div class="now-k">Up next · in 2 min</div><div class="now-t">'+u.t+'</div><div class="now-m">'+u.tm+'–'+u.end+' · '+PLAT[u.plat][1]+' · '+u.ppl+' people · We’ll ask you to record when it starts</div></div></div>'+
+    '<div class="now-acts"><button class="btn rec" onclick="act.start()">'+I.rec+'Record now</button><button class="btn" onclick="act.practice(\'u1\')" title="Opens AI conversations in Busuu">Practice with AI conversations'+I.ext+'</button></div></div>';
+}
+function fmt(s){return String(Math.floor(s/60)).padStart(2,'0')+':'+String(s%60).padStart(2,'0');}
+function upcoming(opts){
+  opts=opts||{};let g='',h='';
+  const list=UPCOMING.filter(u=>!(u.now&&S.rec!=='idle')).slice(0,opts.max||9);
+  list.forEach(u=>{if(u.g!==g){g=u.g;h+='<div class="day">'+g+'</div>';}
+    const act_=u.lang?'<span class="noprac">No practice in '+u.lang+'</span>':'<button class="btn sm pbtn" title="Opens AI conversations in Busuu" aria-label="Practice with AI conversations in Busuu: '+esc(u.t)+'" onclick="act.practice(\''+u.id+'\')">Practice with AI conversations'+I.ext+'</button>';
+    h+='<div class="mrow'+(u.now?' isnow':'')+'"><span class="tm">'+u.tm+'<small>'+(u.now?'Now':u.end)+'</small></span>'+
+      '<div class="mbtn" title="With '+esc(WHO[u.id])+'"><span class="nm" style="display:block">'+esc(u.t)+'</span><span class="mt">'+PLAT[u.plat][1]+' · '+u.ppl+' people</span>'+act_+'</div></div>';});
+  return '<div class="card"><div class="sec-h"><h3>Upcoming</h3><span class="aux">From your Outlook calendar</span></div><p class="uphint">Practice opens AI conversations in Busuu.</p>'+h+'</div>';
+}
+function prepBox(u){
+  if(u.lang)return '<span class="noprep">Practice isn’t offered for meetings in '+u.lang+'.</span>';
+  return '<div class="prep"><span class="ic">'+I.chat+'</span><span class="tx"><b>'+PREP[u.id].title+'</b><small>A 5-minute rehearsal with AI Conversations, built from this meeting</small></span><button class="btn pri sm" onclick="act.practice(\''+u.id+'\')">Practice with AI conversations</button></div>';
+}
+function pill(c){
+  if(c.id===NEWCALL.id&&S.rec==='proc')return '<span class="pill p-blue">Analyzing…</span>';
+  if(c.status==='not_evaluable')return '<span class="pill p-warn">'+c.lang+' is not supported</span>';
+  return '';
+}
+function past(opts){
+  opts=opts||{};
+  const all=pastCalls().slice().reverse(),arch=all.filter(c=>S.archived.includes(c.id)),list=S.pastView==='archived'?arch:all.filter(c=>!S.archived.includes(c.id));
+  const sc=scored();
+  let rows=list.map((c,ri)=>{
+    const i=sc.findIndex(x=>x.id===c.id),prev=i>0?ov(sc[i-1]):null,isA=S.archived.includes(c.id);
+    const pl=pill(c),right=pl?pl:c.dims&&!isA?'<span class="sc"><b>'+ov(c)+'</b>'+(prev!==null?'<span class="d '+(ov(c)>=prev?'up':'dn')+'">'+(ov(c)>=prev?'↑':'↓')+Math.abs(ov(c)-prev)+'</span>':'')+'</span>':'<span class="pill p-grey">Archived</span>';
+    const dd=c.day.split(' ');
+    const fb=c.dims&&!isA&&!pl;
+    return '<div class="more-wrap" style="position:relative'+(S.menu===c.id?';z-index:30':'')+'"><button class="prow'+(S.sel===c.id?' sel':'')+(fb?'':' nofb')+'"'+(fb?' title="Open the feedback for this call" onclick="return openEval()"':'')+'><span class="dt">'+dd[1]+' '+dd[2]+'<small>'+dd[0]+'</small></span>'+
+      '<span style="min-width:0"><span class="nm" style="display:block">'+esc(callT(c))+'</span><span class="mt">'+c.len+' min · '+PLAT[c.plat][1]+'</span></span>'+right+'<span></span></button>'+
+      '<div class="more" style="position:absolute;right:8px;top:50%;transform:translateY(-50%)"><button aria-label="More actions" onclick="act.menu(\''+c.id+'\')">'+I.dots+'</button>'+
+      (S.menu===c.id?'<div class="menu'+(ri>=list.length-2&&list.length>2?' up':'')+'">'+(isA?'<button onclick="act.archive(\''+c.id+'\')">Unarchive</button><small>Counts toward your progress again.</small>':'<button onclick="act.archive(\''+c.id+'\')">Archive</button><small>Hides it here. It won’t count toward your progress.</small>')+'</div>':'')+'</div>'+
+      '</div>';
+  }).join('');
+  if(!rows)rows='<div class="empty">'+(S.pastView==='archived'?'No archived calls. Archive a call to hide it and leave it out of your progress.':'No calls yet.')+'</div>';
+  return '<div class="card" style="padding:16px 14px"><div class="sec-h" style="padding:0 6px"><h3>Past calls</h3><span class="seg"><button aria-pressed="'+(S.pastView==='recent')+'" onclick="act.pv(\'recent\')">Recent</button><button aria-pressed="'+(S.pastView==='archived')+'" onclick="act.pv(\'archived\')">Archived ('+arch.length+')</button></span></div>'+
+    (opts.limit?'<div style="max-height:'+opts.limit+'px;overflow-y:auto;scrollbar-width:thin">'+rows+'</div>':rows)+'</div>';
+}
+
+function summary(){
+  const sc=scored(),last=sc[sc.length-1],first=sc[0],avg=Math.round(sc.slice(-5).reduce((a,c)=>a+ov(c),0)/Math.min(5,sc.length));
+  const cs=[1,2,3,4,5].map(i=>[i,catScore(i)]).sort((a,b)=>b[1]-a[1]);
+  return '<div class="sum"><div><span class="lbl">Communication score, last call</span><div class="v">'+ov(last)+'<small class="d '+(ov(last)>=ov(first)?'up':'dn')+'">'+(ov(last)-ov(first)>=0?'↑ ':'↓ ')+Math.abs(ov(last)-ov(first))+' since your first</small></div><div class="s">'+esc(last.t)+'</div></div>'+
+    '<div><span class="lbl">Communication score, last 5 calls</span><div class="v">'+avg+'</div><div class="s">'+sc.length+' calls scored · '+Math.round(sc.reduce((a,c)=>a+c.len,0)/6)/10+' h recorded</div></div>'+
+    '<div><span class="lbl">Work on next</span><div class="v" style="font-size:16px;margin-top:8px;line-height:1.25">'+CATS[cs[4][0]]+'</div><div class="s">Your lowest category · '+LEVELS[lvOf(cs[4][1])]+'</div></div></div>';
+}
+function trend(o){
+  const W=o.w,H=o.h,pl=34,pr=o.up?150:58,pt=16,pb=30,sc=scored(),ups=o.up?UPCOMING.filter(u=>!(u.now&&S.rec!=='idle')).slice(0,4):[];
+  const n=sc.length,iw=W-pl-pr,y0=30,y1=100,Y=v=>pt+(H-pt-pb)*(1-(v-y0)/(y1-y0));
+  const step=iw/Math.max(1,n-1),X=i=>pl+i*step;
+  let g='';
+  [40,60,80,100].forEach(v=>{g+='<line x1="'+pl+'" x2="'+(W-pr+(o.up?0:12))+'" y1="'+Y(v)+'" y2="'+Y(v)+'" stroke="#e9ecef"/><text x="'+(pl-8)+'" y="'+(Y(v)+4)+'" text-anchor="end" font-size="11" fill="#6c757d">'+v+'</text>';});
+  sc.forEach((c,i)=>{if(n<=9||i%2===n%2||i===n-1){const d=c.day.split(' ');g+='<text x="'+X(i)+'" y="'+(H-8)+'" text-anchor="middle" font-size="11" fill="#6c757d">'+d[1]+' '+d[2]+'</text>';}});
+  const line=(vals,attrs)=>'<path d="'+vals.map((v,i)=>(i?'L':'M')+X(i).toFixed(1)+' '+Y(v).toFixed(1)).join(' ')+'" fill="none" '+attrs+'/>';
+  const ovs=sc.map(ov);
+  const area='<path d="M'+X(0)+' '+Y(y0)+' '+ovs.map((v,i)=>'L'+X(i).toFixed(1)+' '+Y(v).toFixed(1)).join(' ')+' L'+X(n-1)+' '+Y(y0)+'Z" fill="#116EEE" opacity=".07"/>';
+  let m=area+line(ovs,'stroke="#116EEE" stroke-width="2" stroke-linejoin="round"');
+  if(S.dim){const dv=sc.map(c=>c.dims[S.dim]);m+=line(dv,'stroke="#be185d" stroke-width="2" stroke-dasharray="5 4" stroke-linejoin="round"');
+    dv.forEach((v,i)=>{m+='<circle cx="'+X(i)+'" cy="'+Y(v)+'" r="3.5" fill="#be185d" stroke="#fff" stroke-width="2"/>';});}
+  ovs.forEach((v,i)=>{const last=i===n-1,sel=S.sel===sc[i].id;m+='<circle cx="'+X(i)+'" cy="'+Y(v)+'" r="'+(last||sel?6:4.5)+'" fill="#116EEE" stroke="#fff" stroke-width="2"/>'+(sel?'<circle cx="'+X(i)+'" cy="'+Y(v)+'" r="10" fill="none" stroke="#116EEE" stroke-opacity=".35" stroke-width="2"/>':'');});
+  const lx=X(n-1)+10,lo=ovs[n-1];
+  if(!o.up){m+='<text x="'+lx+'" y="'+(Y(lo)+4)+'" font-size="12" font-weight="700" fill="#121b26">'+lo+'</text>';
+    if(S.dim){const dl=sc[n-1].dims[S.dim];m+='<text x="'+lx+'" y="'+(Y(dl)+4)+'" font-size="12" font-weight="700" fill="#1e2d40">'+dl+'</text>';}}
+  if(o.up){const tx=X(n-1)+34;g+='<line x1="'+tx+'" x2="'+tx+'" y1="'+pt+'" y2="'+(H-pb)+'" stroke="#9ca3af" stroke-dasharray="3 3"/><text x="'+(tx+6)+'" y="'+(pt+10)+'" font-size="11" font-weight="700" fill="#4b5766">Today</text>';
+    ups.forEach((u,j)=>{const ux=tx+22+j*30;m+='<circle cx="'+ux+'" cy="'+Y(35)+'" r="6" fill="#fff" stroke="#9ca3af" stroke-width="1.5" stroke-dasharray="2.5 2"/>';});
+    m+='<text x="'+(tx+16)+'" y="'+(Y(35)-14)+'" font-size="11" fill="#6c757d">Coming up</text>';}
+  let hit='';sc.forEach((c,i)=>{hit+='<rect class="hit" data-i="'+i+'" x="'+(X(i)-step/2)+'" y="'+pt+'" width="'+step+'" height="'+(H-pt-pb)+'" onclick="act.sel(\''+c.id+'\')"><title>'+esc(c.t)+'</title></rect>';});
+  if(o.up)ups.forEach((u,j)=>{const ux=X(n-1)+34+22+j*30;hit+='<rect class="hit up" data-u="'+u.id+'" x="'+(ux-14)+'" y="'+pt+'" width="28" height="'+(H-pt-pb)+'"></rect>';});
+  return '<div class="chart" id="chart" data-w="'+W+'"><svg width="'+W+'" height="'+H+'" viewBox="0 0 '+W+' '+H+'" role="img" aria-label="Communication score over your last '+n+' calls, from '+ovs[0]+' to '+lo+'">'+g+m+'<line id="xh" x1="0" x2="0" y1="'+pt+'" y2="'+(H-pb)+'" stroke="#9ca3af" visibility="hidden"/>'+hit+'</svg><div class="tip" id="tip" hidden></div></div>';
+}
+function trendCard(o){
+  const sc=scored(),last=sc[sc.length-1];
+  const avg=k=>Math.round(sc.reduce((a,c)=>a+c.dims[k],0)/sc.length);
+  const chips='<div class="chips"><button class="chip ov" aria-pressed="'+!S.dim+'" onclick="act.dim(null)">Overall</button>'+DIMS.map(([k,n])=>'<button class="chip" aria-pressed="'+(S.dim===k)+'" onclick="act.dim(\''+k+'\')">'+n+'</button>').join('')+'</div>';
+  const dimgrid=o.grid?'<div class="dimgrid">'+DIMS.map(([k,n])=>{const v=last.dims[k],a=avg(k),d=v-a;return '<button class="dimc" aria-pressed="'+(S.dim===k)+'" onclick="act.dim(\''+k+'\')"><div class="n">'+n+'</div><div class="v">'+v+'</div><div class="s"><span class="d '+(d>=0?'up':'dn')+'" style="font-weight:700">'+(d>=0?'+':'−')+Math.abs(d)+'</span> vs your average '+a+'</div></button>';}).join('')+'</div>':'';
+  return '<div class="card"><div class="sec-h"><h3>'+(o.title||'Your communication score')+'</h3><span class="aux">Hover a point to see the call</span></div>'+chips+
+    '<div class="legend"><span><i></i>Overall</span>'+(S.dim?'<span><i class="dm"></i>'+DIMS.find(d=>d[0]===S.dim)[1]+'</span>':'')+(o.up?'<span><i class="up"></i>Upcoming calls</span>':'')+'</div>'+trend(o)+dimgrid+'</div>';
+}
+function categories(o){
+  o=o||{};
+  return '<div class="card"><div class="sec-h"><h3>Capability levels</h3><span class="aux">From '+scored().length+' calls</span></div><div class="cats">'+[1,2,3,4,5].map(i=>{
+    const caps=capsIn(i).sort((a,b)=>(b.score??-1)-(a.score??-1)),s=catScore(i),open=S.openCat===i,cc='--cc:'+CATCOL[i][0]+';--ct:'+CATCOL[i][1],d=CAT_DELTA[i];
+    return '<div class="cat'+(open?' open':'')+'" style="'+cc+'"><button class="cat-h" aria-expanded="'+open+'" onclick="act.cat('+i+')"><span class="cat-ic">'+i+'</span><span><span class="cat-nm">'+CATS[i]+'</span><span class="cat-n">'+caps.length+' heard · <span class="d '+(d>=0?'up':'dn')+'" style="font-weight:700">'+(d>=0?'↑ ':'↓ ')+Math.abs(d)+'</span> in 30 days</span></span>'+(s==null?'<span class="gs">Getting started</span>':lvMeter(s))+'<span class="chev">▶</span></button>'+
+      (open?'<div class="cat-b">'+caps.map(c=>'<button class="caprow" aria-current="'+(S.cap===c.n)+'" onclick="act.cap(\''+esc(c.n)+'\')"><span class="cn">'+c.n+(c.cats.length>1?'<small>Also in '+c.cats.filter(x=>x!==i).map(x=>CATS[x]).join(', ')+'</small>':'')+'</span>'+
+        (c.ready?lvMeter(c.score):'<span class="gs">Getting started</span>')+'<span class="chev">›</span></button>').join('')+'</div>':'')+'</div>';
+  }).join('')+'</div></div>';
+}
+function capDetail(o){
+  o=o||{};const c=CAPS.find(x=>x.n===S.cap)||CAPS.find(x=>x.n==='Explaining background and situation');
+  const cc=CATCOL[c.cats[0]][0],seen=c.kcs.filter(k=>k[2]>0),unseen=c.kcs.filter(k=>!k[2]);
+  const kc=k=>'<div class="kc" style="--cc:'+cc+'"><span class="kt">'+k[0]+'</span><span class="kn">'+k[1]+'<small>'+k[2]+' use'+(k[2]>1?'s':'')+' · '+k[3]+' went well</small></span>'+lvMeter(k[4])+'</div>';
+  const mo=m=>{const call=callById(m[0]);return '<div class="mo"><span class="ic '+m[2]+'">'+(m[2]==='good'?I.check:I.bang)+'</span><span><div class="q">“'+esc(m[3])+'”</div><div class="w">'+(m[2]==='good'?'Went well':'To work on')+' · '+esc(call.t)+' · '+call.day.split(' ').slice(1).join(' ')+' at '+m[1]+'</div></span><a class="linkbtn" href="#" onclick="return openEval()" aria-label="Open this moment in the feedback">Open →</a></div>';};
+  return (o.back?'<button class="cd-back" onclick="act.cap(null)">'+I.back+'All capabilities</button>':'')+
+    '<div class="card"><div class="cd-hd"><div class="tx"><span class="lbl">Capability</span><h3>'+c.n+'</h3><div class="cd-cats">'+c.cats.map(x=>'<span class="cd-cat"><i style="background:'+CATCOL[x][0]+'"></i>'+CATS[x]+'</span>').join('')+'</div></div>'+
+    '<div class="cd-score">'+(c.ready?'<span class="lvl-w">'+LEVELS[lvOf(c.score)]+'</span>'+lvMeter(c.score,{big:true,noLabel:true})+'<small>'+(lvOf(c.score)<2?'On the way to '+LEVELS[lvOf(c.score)+1]:'Top level')+'</small>':'<b style="font-size:18px;color:var(--grey-r)">Getting started</b><small>'+(MIN_MOMENTS-c.moms.length)+' more moment'+(MIN_MOMENTS-c.moms.length>1?'s':'')+' to get a level</small>')+'</div></div></div>'+
+    '<div class="how"><b>How this level is built.</b> Each time you use this capability in a call, Companion notes which skills you used and whether they landed. Your level comes from the skills we’ve heard you use, from '+c.moms.length+' moments in '+c.calls+' call'+(c.calls>1?'s':'')+'. Skills you haven’t used in a call yet don’t count.</div>'+
+    '<div class="card"><div class="sec-h"><h3>Skills</h3><span class="aux">'+seen.length+' of '+c.kcs.length+' heard in your calls</span></div>'+seen.map(kc).join('')+
+      (unseen.length?'<div class="day" style="margin-top:10px">Not heard yet</div>'+unseen.map(k=>'<div class="kc unseen"><span class="kt">'+k[0]+'</span><span class="kn">'+k[1]+'</span><span></span></div>').join(''):'')+'</div>'+
+    '<div class="card"><div class="sec-h"><h3>Moments from your calls</h3><span class="aux">'+c.moms.filter(m=>m[2]==='good').length+' went well · '+c.moms.filter(m=>m[2]==='fix').length+' to work on</span></div>'+c.moms.map(mo).join('')+'</div>';
+}
+
+function header(){
+  return '<div class="db-hd"><img src="img/logo.svg" alt="Busuu Companion"><span></span>'+'<div class="rt"><button class="set">Settings</button><span class="av" aria-label="Jordan">J</span></div></div>';
+}
+function layoutB(){
+  return '<div class="db-body" style="grid-template-columns:420px minmax(0,1fr)"><div class="col">'+nowCard()+upcoming({max:4})+past()+'</div><div class="col">'+
+    (S.cap?capDetail({back:true}):trendCard({w:690,h:210,title:'Your communication score'})+categories())+'</div></div>';
+}
+function notif(){
+  if(S.rec!=='prompt')return '';
+  const u=UPCOMING[0],av=[['A','#7c3aed'],['A','#0d9488'],['P','#db2777'],['J','#f59e0b']];
+  if(S.detect==='gen')return '<div class="notif-wrap"><div class="notif" role="alertdialog" aria-label="Meeting detected"><div class="in">'+
+    '<div class="hd"><span class="appic">'+I.micW+'</span><span class="nm">Busuu Companion<small>Meeting detected</small></span><time>now</time></div>'+
+    '<span class="live"><i></i>Microphone in use</span>'+
+    '<span class="tt">Are you in a meeting?</span>'+
+    '<div class="mt">Record it to get feedback on your English afterwards.</div>'+
+    '<div class="ac"><button class="p" onclick="act.start()">'+I.rec+'Record this call</button><button class="s" onclick="act.skip()">Not this one</button></div></div>'+
+    '<div class="ft">'+I.shield+'Let everyone know you’re recording.</div></div></div>';
+  return '<div class="notif-wrap"><div class="notif" role="alertdialog" aria-label="Meeting started"><div class="in">'+
+    '<div class="hd"><span class="appic">'+I.micW+'</span><span class="nm">Busuu Companion<small>Meeting detected in '+PLAT[u.plat][1]+'</small></span><time>now</time></div>'+
+    '<span class="live"><i></i>Started 1 min ago</span>'+
+    '<span class="tt">'+u.t+'</span>'+
+    '<div class="mt"><span class="pb"><b>'+PLAT[u.plat][0]+'</b>'+u.tm+'–'+u.end+'</span><span class="avs">'+av.map(a=>'<span style="background:'+a[1]+'">'+a[0]+'</span>').join('')+'<span class="more">+2</span></span></div>'+
+    '<div class="ac"><button class="p" onclick="act.start()">'+I.rec+'Record this call</button><button class="s" onclick="act.skip()">Not this one</button></div></div>'+
+    '<div class="ft">'+I.shield+'Let everyone know you’re recording.</div></div></div>';
+}
+
+function practiceScreen(){
+  if(S.redir){const u0=UPCOMING.find(x=>x.id===S.practice);return '<div class="chrome"><i></i><i></i><i></i><span>Redirecting to Busuu…</span></div><div class="cs pr"><div class="rd" role="status" aria-live="polite"><div class="rd-sp" aria-hidden="true"></div><h2>Redirecting to Busuu…</h2><p>Creating a custom scenario based on your meeting: <b>'+esc(u0.t)+'</b></p><div class="rd-bar"><i></i></div><button onclick="act.practice(null)">Cancel</button></div></div>';}
+  const u=UPCOMING.find(x=>x.id===S.practice),p=PREP[u.id],done=S.pst==='done',lc=[1,2,3,4,5].map(i=>[i,catScore(i)]).sort((a,b)=>a[1]-b[1])[0][0];
+  return '<div class="chrome"><i></i><i></i><i></i><span>Busuu · AI Conversations</span></div><div class="cs pr">'+
+    '<div class="pr-top"><button class="pr-x" aria-label="Close and go back to the dashboard" onclick="act.practice(null)">'+I.x+'</button><div class="pr-bar" role="progressbar" aria-valuenow="'+(done?1:0)+'" aria-valuemax="3"><i style="width:'+(done?34:0)+'%"></i></div></div>'+
+    '<div class="pr-main"><div class="pr-title">'+p.title+'</div><div class="pr-goal"><span aria-hidden="true">🎯</span>'+p.goal+'</div>'+
+    '<div class="pr-from"><span class="pill p-blue">For '+esc(u.t)+' · '+u.g.split(' · ')[0]+' '+u.tm+'</span><span class="pill" style="background:'+CATCOL[lc][1]+';color:'+CATCOL[lc][0]+'">Builds on: '+CATS[lc]+'</span></div>'+
+    '<div class="pr-chat"><div class="pr-ai">'+p.ai+'<br><button class="spk" aria-label="Play">'+I.spk+'</button></div>'+
+    (done?'<div class="pr-me">'+p.me+'</div><span class="pr-fb"><span class="ck">'+I.check+'</span>'+p.fb+'</span>':'')+'</div></div>'+
+    '<div class="pr-foot"><button class="pr-mic'+(S.pst==='rec'?' rec':'')+'" aria-label="'+(S.pst==='rec'?'Stop recording':'Record')+'" onclick="act.pmic()">'+I.micL+'</button><span class="pr-hint">'+(S.pst==='rec'?'Recording… click to stop':done?'Click to answer the next question':'Click to record your answer')+'</span></div></div>';
+}
+
+let tick=null;
+function render(){
+  const d=document.getElementById('device');if(!d)return;
+    if(S.practice){clearInterval(tick);d.innerHTML=practiceScreen();fit();return;}
+  const toast=S.toast?'<div class="toast" role="status">'+S.toast+'</div>':'';
+  const keep=resetScroll?[]:[...d.querySelectorAll('.col,.pstack')].map(e=>e.scrollTop);resetScroll=false;
+  d.innerHTML='<div class="cs">'+header()+layoutB()+notif()+toast+'</div>';
+  d.querySelectorAll('.col,.pstack').forEach((e,i)=>{if(keep[i])e.scrollTop=keep[i];});
+  wire();fit();
+  clearInterval(tick);
+  if(S.rec==='rec')tick=setInterval(()=>{S.secs++;['rectime','rectime2'].forEach(id=>{const e=document.getElementById(id);if(e)e.textContent=fmt(S.secs);});},1000);
+}
+function wire(){
+  const ch=document.getElementById('chart');if(!ch)return;
+  const tip=document.getElementById('tip'),xh=document.getElementById('xh'),sc=scored();
+  ch.querySelectorAll('.hit').forEach(r=>{
+    r.addEventListener('mouseenter',()=>{
+      const x=+r.getAttribute('x')+(+r.getAttribute('width'))/2;
+      xh.setAttribute('x1',x);xh.setAttribute('x2',x);xh.setAttribute('visibility','visible');
+      if(r.dataset.u){const u=UPCOMING.find(x=>x.id===r.dataset.u);tip.innerHTML='<b>'+esc(u.t)+'</b><div>'+u.g.split(' · ')[0]+' '+u.tm+' · '+(S.prompt[u.id]?'We’ll ask you to record':'No reminder')+'</div>';}
+      else{const c=sc[+r.dataset.i],dn=S.dim&&DIMS.find(d=>d[0]===S.dim)[1];
+        tip.innerHTML='<b>'+esc(c.t)+'</b><div style="color:#aab4c3;margin-bottom:4px">'+c.day+' · '+c.len+' min</div><div class="r"><span><span class="k"></span>Overall</span><b>'+ov(c)+'</b></div>'+(S.dim?'<div class="r"><span><span class="k dm"></span>'+dn+'</span><b>'+c.dims[S.dim]+'</b></div>':'')+'<div style="color:#aab4c3;margin-top:4px">Click to select this call</div>';}
+      tip.hidden=false;tip.style.left=x+'px';tip.style.top='40px';
+    });
+    r.addEventListener('mouseleave',()=>{tip.hidden=true;xh.setAttribute('visibility','hidden');});
+  });
+}
+
+let rdT=null;
+const act={
+  tab:t=>{S.tab=t;S.menu=null;render();},
+  detect:()=>{S.rec='prompt';render();},
+  start:()=>{S.rec='rec';S.secs=0;S.toast=null;render();},
+  skip:()=>{S.rec='idle';S.toast='Okay, we won’t record this call.';render();setTimeout(()=>{S.toast=null;render();},2600);},
+  stop:()=>{S.rec='proc';S.tab='meet';S.sel=null;render();clearTimeout(procT);procT=setTimeout(()=>{if(S.rec==='proc')act.done();},ANALYSE_MS);},
+  cancel:()=>{S.rec='idle';S.toast='Recording cancelled and deleted.';render();setTimeout(()=>{S.toast=null;render();},2600);},
+  done:()=>{S.rec='ready';S.sel=NEWCALL.id;render();},
+  toProgress:()=>{S.tab='prog';S.cap=null;render();},
+  detect_:k=>{S.detect=k;render();},
+  bell:id=>{S.prompt[id]=!S.prompt[id];render();},
+  up:id=>{S.upSel=S.upSel===id?null:id;render();},
+  practice:id=>{S.practice=id;S.pst='idle';clearTimeout(rdT);S.redir=!!id;if(id)rdT=setTimeout(()=>{if(S.practice===id&&S.redir){S.redir=false;render();}},2400);render();},
+  pmic:()=>{S.pst=S.pst==='rec'?'done':S.pst==='done'?'done':'rec';render();},
+  sel:id=>{S.sel=S.sel===id?null:id;S.menu=null;render();},
+  menu:id=>{S.menu=S.menu===id?null:id;render();},
+  archive:id=>{const a=S.archived.includes(id);S.archived=a?S.archived.filter(x=>x!==id):S.archived.concat(id);S.menu=null;if(S.sel===id)S.sel=null;
+    const c=callById(id);S.toast=a?'Unarchived “'+esc(c.t)+'”':'Archived “'+esc(c.t)+'”. It no longer counts toward your progress. <button onclick="act.archive(\''+id+'\')">Undo</button>';render();clearTimeout(act._t);act._t=setTimeout(()=>{S.toast=null;render();},5000);},
+  pv:v=>{S.pastView=v;S.menu=null;render();},
+  dim:k=>{S.dim=k;render();},
+  cat:i=>{S.openCat=S.openCat===i?null:i;render();},
+  cap:n=>{S.cap=n;if(n)S.tab='prog';render();}
+};
+document.addEventListener('click',e=>{if(S.menu&&!e.target.closest('.more')){S.menu=null;render();}});
+
+const STEPS={
+ home:()=>({practice:null,upSel:null,rec:'idle',tab:'meet',cap:null,dim:null,sel:null,toast:null}),
+ prog:()=>({practice:null,upSel:null,rec:'ready',tab:'prog',cap:null,dim:'flu',sel:null,openCat:4,toast:null})
+};
+const ANALYSE_MS=6500;
+let procT=null,resetScroll=false;
+function toggleNotif(){
+  if(S.practice||S.menu)return;
+  if(S.rec==='idle')act.detect();
+  else if(S.rec==='prompt'){S.rec='idle';render();}
+}
+function go(id){
+  clearTimeout(procT);resetScroll=true;Object.assign(S,STEPS[id]());render();
+  requestAnimationFrame(fit);setTimeout(fit,60);
+}
+const stage=document.getElementById('stage');
+stage.innerHTML='<div class="devwrap" id="devwrap"><div class="device" id="device"></div></div>';
+window.addEventListener('message',e=>{
+  if(e.source!==window.parent||!e.data)return;
+  if(e.data.notif){toggleNotif();return;}
+  if(STEPS[e.data.step])go(e.data.step);
+});
+document.addEventListener('keydown',e=>{
+  if(e.code==='KeyN'&&e.shiftKey&&!e.ctrlKey&&!e.metaKey&&!e.altKey&&!/^(INPUT|TEXTAREA)$/.test((e.target||{}).tagName||'')){e.preventDefault();toggleNotif();}
+});
+function fit(){
+  const d=document.getElementById('device');if(!d||!d.offsetWidth)return;
+  const M=Math.min(24,innerWidth*.02),s=Math.min((innerWidth-2*M)/d.offsetWidth,(innerHeight-2*M)/d.offsetHeight);
+  d.style.transform='scale('+s+')';d.style.left=Math.max(0,(innerWidth-d.offsetWidth*s)/2)+'px';d.style.top=Math.max(0,(innerHeight-d.offsetHeight*s)/2)+'px';
+}
+window.addEventListener('resize',fit);
+if(window.ResizeObserver)new ResizeObserver(fit).observe(document.documentElement);
+{const hs=location.hash.slice(1);go(hs.startsWith('step:')&&STEPS[hs.slice(5)]?hs.slice(5):'home');}
+</script>
+
+</body></html>

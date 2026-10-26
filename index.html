@@ -1,0 +1,653 @@
+<!doctype html><html><head><meta charset=utf8><meta name=viewport content="width=device-width,initial-scale=1,viewport-fit=cover"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style></head><body>
+<title>Busuu Companion</title>
+<style>
+  @font-face{font-family:"BW Nista Grotesk";src:url("fonts/BwNistaGrot-Rg.woff2") format("woff2");font-weight:400;font-display:swap}
+  @font-face{font-family:"BW Nista Grotesk";src:url("fonts/BwNistaGrot-Md.woff2") format("woff2");font-weight:500;font-display:swap}
+  @font-face{font-family:"BW Nista Grotesk";src:url("fonts/BwNistaGrot-Bd.woff2") format("woff2");font-weight:600 700;font-display:swap}
+  @font-face{font-family:"BW Nista Grotesk";src:url("fonts/BwNistaGrot-xBd.woff2") format("woff2");font-weight:800 900;font-display:swap}
+
+  *{box-sizing:border-box}
+  html,body{height:100%}
+  body{margin:0;overflow:hidden;background:#0f1216}
+  :focus-visible{outline:2px solid #116EEE;outline-offset:2px}
+  .devwrap{position:fixed;inset:0}
+  .device{position:absolute;top:0;left:0;width:1280px;transform-origin:top left;border-radius:10px;overflow:hidden;background:#fff;box-shadow:0 24px 60px -12px rgba(0,0,0,.55)}
+  .device .chrome{height:30px;background:#e7e9ec;display:flex;align-items:center;gap:6px;padding:0 12px;border-bottom:1px solid #d8dade;font:500 12px -apple-system,sans-serif;color:#6d6d72}
+  .device .chrome i{width:11px;height:11px;border-radius:50%;background:#ff5f57;display:inline-block}
+  .device .chrome i:nth-child(2){background:#febc2e}.device .chrome i:nth-child(3){background:#28c840}
+  .device .chrome span{flex:1;text-align:center;margin-right:50px}
+  .device .chrome + .cs{height:790px}
+  .dbframe{position:fixed;inset:0;width:100%;height:100%;border:0;background:#0f1216}
+  @media (prefers-reduced-motion:reduce){*{scroll-behavior:auto!important}}
+
+  .cs{
+    --text-primary:#121b26; --text-secondary:#1e2d40; --text-tertiary:#4b5766; --ink-r:#1a1a2e; --grey-r:#6c757d; --body-r:#495057;
+    --busuublue-100:#116EEE; --busuublue-5:#f3f8fe; --cta:#1967d2; --cta-soft:#e8f0fe;
+    --success:#0EBE75; --success-ink:#067a4a; --lime-5:#f3fefa; --lime-20:#bbf7d0;
+    --amber-5:#fffbeb; --amber-20:#fde68a; --amber-100:#92400e; --amber-120:#d97706;
+    --utilityred-5:#fef4f5; --utilityred-20:#fecaca; --utilityred-100:#e2222e;
+    --neutral-5:#f3f4f6; --neutral-100:#9ca3af; --context-card:#F3F3F5; --row-border:#E5E7EB; --border-subtle:#dae1ea; --hd-border:#e9ecef; --ground:#f8f9fa;
+    width:1280px;height:820px;position:relative;display:flex;flex-direction:column;overflow:hidden;
+    background:var(--ground);color:var(--ink-r);font-family:"BW Nista Grotesk",-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;font-size:14px;line-height:1.45;color-scheme:light;
+  }
+  .cs *{box-sizing:border-box}
+  .cs button{font-family:inherit;cursor:pointer}
+  .cs button:focus-visible{outline:2px solid var(--busuublue-100);outline-offset:2px}
+
+  .cs-hd{display:flex;align-items:center;justify-content:space-between;padding:16px 24px;background:#fff;border-bottom:1px solid var(--hd-border);flex-shrink:0}
+  .cs-back,.cs-cta{background:none;border:none;font-size:14px;padding:6px 0;width:180px;text-align:left}
+  .cs-back{color:var(--grey-r)}
+  .cs-cta{color:var(--cta);font-weight:600;text-align:right}
+  .cs-title{display:flex;flex-direction:column;align-items:center;gap:4px}
+  .cs-title b{font-size:16px;font-weight:600}
+  .cs-title small{font-size:12px;color:var(--grey-r)}
+
+  .cs-body{flex:1;min-height:0;display:grid;grid-template-columns:440px minmax(0,1fr)}
+  .cs-left{overflow-y:auto;padding:20px 20px 24px 24px;display:flex;flex-direction:column;gap:16px;border-right:1px solid var(--hd-border);scrollbar-width:thin}
+  .cs-right{display:flex;flex-direction:column;min-height:0}
+
+  .card{background:#fff;border-radius:12px;padding:20px}
+  .c-h{font-size:14px;font-weight:600;color:var(--ink-r)}
+  .c-sub{font-size:13px;color:var(--body-r);margin-top:4px}
+  .c-lbl{font-size:11px;font-weight:700;letter-spacing:.04em;text-transform:uppercase;color:var(--text-tertiary)}
+  .hint{font-size:12px;color:var(--grey-r)}
+
+  .spider{display:block;margin:4px auto 0}
+  .spider .ax{cursor:pointer;outline:none}
+  .spider .ax text{font-family:inherit}
+  .spider .ax .nm{font-size:12px;font-weight:700;fill:var(--text-secondary)}
+  .spider .ax .st{font-size:11px;font-weight:600}
+  .spider .ax.sel .nm{fill:var(--busuublue-100)}
+  .spider .ax:focus-visible .hit{stroke:var(--busuublue-100);stroke-width:2}
+
+  .capgrp{display:flex;flex-direction:column;gap:2px}
+  .capgrp+.capgrp{margin-top:10px}
+  .capgrp .gh{display:flex;align-items:center;gap:7px;font-size:11px;font-weight:700;letter-spacing:.04em;text-transform:uppercase;color:var(--text-tertiary);padding:0 8px 2px}
+  .capgrp .gh i{width:8px;height:8px;border-radius:2px;display:inline-block}
+  .caprow{display:grid;grid-template-columns:minmax(0,1fr) auto auto;gap:10px;align-items:center;width:100%;border:1px solid transparent;background:none;border-radius:9px;padding:7px 8px;text-align:left;color:var(--ink-r);font-size:13px}
+  .caprow:hover{background:var(--neutral-5)}
+  .caprow[aria-pressed="true"]{background:var(--busuublue-5);border-color:#e4effd}
+  .caprow b{font-weight:600}
+  .dots{display:flex;gap:3px}
+  .dots i{width:8px;height:8px;border-radius:50%;display:inline-block}
+  .dots i.good{background:var(--success)} .dots i.fix{background:var(--amber-120)}
+  .fstrip{background:var(--busuublue-5);border-radius:10px;padding:12px 14px;display:flex;flex-direction:column;gap:6px}
+  .fstrip .fk{font-size:11px;font-weight:700;letter-spacing:.04em;text-transform:uppercase;color:var(--cta)}
+  .fstrip .fl{font-size:14.5px;font-weight:700;color:var(--ink-r);line-height:1.35}
+  .fstrip .ft{font-size:13px;color:var(--body-r)}
+  .fstrip .ft b{color:var(--ink-r)}
+  .fstrip{padding:0;gap:0}
+  .fhit{position:relative;display:flex;flex-direction:column;gap:6px;width:100%;text-align:left;background:none;border:0;border-radius:10px;padding:12px 14px 10px;cursor:pointer}
+  .fhit:hover{background:#e8f1fd}
+  .fhit:focus-visible{outline:2px solid var(--cta);outline-offset:-2px}
+  .fgo{position:absolute;top:12px;right:14px;font-size:11.5px;font-weight:700;color:var(--cta);font-variant-numeric:tabular-nums}
+  .fhit .fk{padding-right:64px}
+  .fprac{align-self:flex-start;margin:0 14px 12px;height:30px;font-size:12.5px}
+  .fbody{display:flex;flex-direction:column;gap:6px;padding:12px 14px 4px}
+  .fts{display:flex;flex-wrap:wrap;gap:6px;margin-top:2px}
+  .fts .ts{padding:2px 7px;font-size:12px;background:#fff;box-shadow:inset 0 0 0 1px #d6e6fc}
+  .fts .ts:hover{background:#e8f1fd}
+  .partlay{display:flex;flex-wrap:wrap;gap:28px 44px;align-items:flex-start}
+  .partlay .devwrap{flex:0 0 auto;max-width:100%}
+  .notes.prd{display:flex;flex-direction:column;gap:22px;flex:1 1 340px;min-width:300px;max-width:620px;margin-top:0}
+  .cs.part{width:auto;height:auto;display:block;overflow:visible;padding:20px}
+  .cs.part .pcol{height:700px;background:#fff;border-radius:12px;overflow:hidden}
+  .cs.part .pm{padding:0;overflow:hidden}
+  .pm .cs-rhead{padding:14px 16px 12px;gap:10px 12px}
+  .pm .key{margin-left:0;width:100%}
+  .pm-b{padding:0 16px 14px 12px}
+  .pm-b .map{width:70px}
+  .facts{display:flex;flex-wrap:wrap;gap:8px;padding:8px 14px 12px}
+  .fq{display:flex;flex-direction:column;gap:3px;padding:12px 14px;background:var(--busuublue-5);border-radius:10px}
+  .fq-k{font-size:11.5px;font-weight:700;letter-spacing:.05em;text-transform:uppercase;color:var(--cta);margin-bottom:2px}
+  .fq-n{font-size:13.5px;font-weight:600;color:var(--ink-r)}
+  .fq-t{font-size:12.5px;color:var(--body-r)}
+  .fq{cursor:pointer;transition:background .15s}
+  .fq:hover{background:#e8f1fd}
+  .fq-p{align-self:flex-start;margin-top:6px}
+  .btn.on{border-color:var(--cta);color:var(--cta);background:#fff}
+  .cats{display:flex;flex-direction:column;gap:8px;margin-top:12px}
+  .cat{--cc:#116EEE;--ct:#f1f6fe;border:1px solid var(--row-border);border-radius:12px;background:#fff;overflow:hidden}
+  .cat.open{background:var(--ct);border-color:transparent}
+  .cat.none{background:none;border-style:dashed}
+  .cat-h{display:grid;grid-template-columns:28px minmax(0,1fr) auto 12px;gap:10px;align-items:center;width:100%;background:none;border:0;padding:10px 12px;text-align:left;color:var(--ink-r)}
+  .cat-ic{width:28px;height:28px;border-radius:8px;background:var(--cc);color:#fff;font-size:12.5px;font-weight:700;display:flex;align-items:center;justify-content:center}
+  .cat.none .cat-ic{background:var(--neutral-5);color:var(--grey-r)}
+  .cat-h .cat-nm{display:block;font-size:13.5px;font-weight:600;line-height:1.3}
+  .cat.none .cat-nm{color:var(--grey-r);font-weight:500}
+  .cat-tx{min-width:0;display:block}
+  .cat-h .n{display:block;font-size:12px;font-weight:400;color:var(--grey-r);margin-top:1px}
+  .cat-h .chev{color:var(--grey-r);font-size:14px;line-height:1;transition:transform .15s;justify-self:end}
+  .cat-h[aria-expanded="true"] .chev{transform:rotate(90deg)}
+  .cat-b{padding:0 8px 8px;display:flex;flex-direction:column;gap:4px}
+  .cat .caprow{grid-template-columns:minmax(0,1fr) auto;background:#fff;border-radius:8px;padding:9px 10px;font-size:13px}
+  .cat .caprow b{font-weight:500}
+  .cat .caprow:hover{box-shadow:inset 0 0 0 1px var(--cc)}
+  .cat .caprow[aria-pressed="true"]{box-shadow:inset 0 0 0 2px var(--cc);background:#fff}
+  .delta{display:inline-flex;gap:4px;font-size:12px;font-weight:700;font-variant-numeric:tabular-nums}
+  .delta span{padding:1px 7px;border-radius:999px}
+  .delta .up{color:var(--success-ink);background:var(--lime-5);box-shadow:inset 0 0 0 1px var(--lime-20)}
+  .delta .dn{color:var(--amber-100);background:var(--amber-5);box-shadow:inset 0 0 0 1px var(--amber-20)}
+  .catkey{display:flex;gap:14px;font-size:11.5px;color:var(--grey-r);margin-top:10px}
+
+  .cefr-top{display:flex;align-items:baseline;gap:12px}
+  .cefr-big{font-size:44px;font-weight:800;line-height:1;color:var(--busuublue-100);letter-spacing:-.02em;font-variant-numeric:tabular-nums}
+  .scale{position:relative;margin:16px 0 4px}
+  .scale .tr{display:grid;grid-template-columns:repeat(6,1fr);gap:3px}
+  .scale .tr i{height:8px;border-radius:2px;background:var(--neutral-5)}
+  .scale .tr i.on{background:#bcd6fb}
+  .scale .lb{display:grid;grid-template-columns:repeat(6,1fr);gap:3px;margin-top:5px;font-size:11px;color:var(--grey-r);font-weight:600}
+  .scale .lb span{text-align:center}
+  .scale .bar100{height:8px;border-radius:4px;background:var(--neutral-5);overflow:hidden}
+  .scale .bar100 i{display:block;height:100%;background:#bcd6fb}
+  .scale .lb.five{display:flex;justify-content:space-between}
+  .scale .lb.five span{width:auto}
+  .scale .mk{position:absolute;top:-4px;width:4px;height:16px;border-radius:2px;background:var(--busuublue-100);box-shadow:0 0 0 2px #fff}
+  .dimrow{display:grid;grid-template-columns:minmax(0,1fr) 46px;gap:10px;align-items:center;width:100%;border:1px solid transparent;background:none;border-radius:9px;padding:7px 8px;text-align:left;color:var(--ink-r)}
+  .dimrow b{display:block;font-size:13px;font-weight:600}
+  .dimrow small{display:block;font-size:11.5px;color:var(--grey-r)}
+  .lvl{justify-self:end;font-size:12px;font-weight:700;padding:2px 8px;border-radius:999px;background:var(--neutral-5);color:var(--text-secondary);font-variant-numeric:tabular-nums}
+  .lvl.up{background:var(--lime-5);color:var(--success-ink);box-shadow:inset 0 0 0 1px var(--lime-20)}
+
+  .pill{display:inline-flex;align-items:center;gap:5px;height:22px;padding:0 9px;border-radius:999px;font-size:11px;font-weight:700;white-space:nowrap}
+  .p-good{background:var(--lime-5);color:var(--success-ink);box-shadow:inset 0 0 0 1px var(--lime-20)}
+  .p-warn{background:var(--amber-5);color:var(--amber-100);box-shadow:inset 0 0 0 1px var(--amber-20)}
+  .p-mix{background:var(--busuublue-5);color:var(--busuublue-100);box-shadow:inset 0 0 0 1px #e4effd}
+  .p-red{background:var(--utilityred-5);color:var(--utilityred-100);box-shadow:inset 0 0 0 1px var(--utilityred-20)}
+  .p-cap{background:var(--neutral-5);color:var(--text-secondary);font-weight:600}
+
+  .focus-h{font-size:14px;font-weight:600;color:var(--ink-r);margin-bottom:10px}
+  .focus-h span{color:var(--cta)}
+  .focus-line{font-size:17px;font-weight:700;line-height:1.35;color:var(--ink-r);margin-bottom:12px}
+  .bubblebox{display:flex;align-items:flex-start;gap:8px;background:var(--busuublue-5);border-radius:8px;padding:14px 16px;font-size:13.5px;color:var(--body-r)}
+  .bubblebox img{width:24px;height:24px;flex-shrink:0}
+  .try{margin-top:10px;font-size:13.5px;font-weight:700;color:var(--ink-r);background:var(--lime-5);border-radius:8px;padding:10px 12px}
+  .try span{display:block;font-size:10.5px;font-weight:700;letter-spacing:.05em;text-transform:uppercase;color:var(--success-ink);margin-bottom:2px}
+  .acts{display:flex;flex-wrap:wrap;gap:8px;margin-top:14px}
+  .btn{height:34px;border-radius:8px;padding:0 14px;font-size:13px;font-weight:600;border:1px solid var(--row-border);background:#fff;color:var(--ink-r);display:inline-flex;align-items:center;gap:7px;white-space:nowrap}
+  .btn.pri{background:var(--cta);border-color:var(--cta);color:#fff}
+  .btn.sm{height:30px;padding:0 11px;font-size:12px}
+  .btn svg{flex-shrink:0}
+  .ameta{font-size:11.5px;color:var(--grey-r);margin-top:8px}
+
+  .rating{background:#fff;border-radius:10px;padding:16px;box-shadow:0 1px 3px rgba(0,0,0,.08)}
+  .rating .q{font-size:14px;font-weight:600;color:var(--ink-r);margin-bottom:10px}
+  .rating .th{display:flex;gap:8px;margin-bottom:12px}
+  .rating .th button{border:2px solid #dee2e6;border-radius:8px;background:#fff;padding:8px 14px;font-size:16px}
+  .rating textarea{width:100%;min-height:64px;border-radius:8px;border:1px solid #dee2e6;padding:8px 10px;font:inherit;font-size:14px;resize:none}
+  .rating .ct{font-size:12px;color:var(--grey-r);text-align:right;margin-bottom:10px}
+  .rating .sub{background:var(--cta);color:#fff;border:none;border-radius:8px;padding:8px 16px;font-size:14px;font-weight:600;opacity:.6;cursor:not-allowed}
+
+  .cs-rhead{display:flex;align-items:center;gap:12px;padding:14px 24px 12px 24px;border-bottom:1px solid var(--hd-border);flex-wrap:wrap;flex-shrink:0}
+  .cs-rhead h3{margin:0;font-size:16px;font-weight:700}
+  .mseg{display:flex;background:#e9ecf0;border-radius:999px;padding:3px}
+  .mseg button{height:28px;border:0;border-radius:999px;background:none;font-size:12px;font-weight:700;color:var(--text-tertiary);padding:0 12px}
+  .mseg button[aria-pressed="true"]{background:#fff;color:var(--ink-r);box-shadow:0 1px 2px rgba(0,0,0,.12)}
+  .fpill{display:inline-flex;align-items:center;gap:6px;height:28px;padding:0 6px 0 12px;border-radius:999px;background:var(--busuublue-5);color:var(--busuublue-100);font-size:12px;font-weight:700;box-shadow:inset 0 0 0 1px #e4effd}
+  .fpill button{border:0;background:#fff;color:var(--busuublue-100);border-radius:999px;height:20px;padding:0 8px;font-size:11px;font-weight:700}
+  .key{margin-left:auto;display:flex;gap:12px;font-size:11.5px;color:var(--grey-r)}
+  .key span{display:inline-flex;align-items:center;gap:5px}
+  .key i{width:9px;height:9px;border-radius:50%;display:inline-block}
+
+  .cs-scroll{flex:1;min-height:0;overflow-y:auto;position:relative;display:grid;grid-template-columns:70px minmax(0,1fr);gap:8px;padding:0 28px 28px 12px;scrollbar-width:thin}
+  .map{position:sticky;top:0;height:560px;padding-top:18px}
+  .map .ln{position:absolute;left:44px;top:18px;bottom:0;width:2px;background:var(--border-subtle);border-radius:1px}
+  .map span{position:absolute;left:0;width:34px;text-align:right;font-size:10px;color:var(--neutral-100);transform:translateY(-50%);font-variant-numeric:tabular-nums}
+  .map button{position:absolute;left:39px;width:12px;height:12px;border-radius:50%;border:2px solid #fff;padding:0;box-shadow:0 0 0 1px rgba(0,0,0,.08);transform:translateY(-50%)}
+  .map button.good{background:var(--success)} .map button.fix{background:var(--amber-120)}
+  .map button.dim{opacity:.18;cursor:default}
+  .map button.cur{box-shadow:0 0 0 3px #cfe0fb}
+  .conv{display:flex;flex-direction:column;gap:10px;padding-top:18px}
+  .row{display:flex;flex-direction:column;transition:opacity .2s;border-radius:18px}
+  .row.dim{opacity:.25}
+  .nm{display:block;font-size:10.5px;font-weight:700;letter-spacing:.04em;text-transform:uppercase;color:var(--neutral-100);margin:0 6px 3px}
+  .nm time{font-weight:500;letter-spacing:0;text-transform:none;margin-left:6px}
+  .row.them{align-items:flex-start}
+  .row.you{align-items:flex-end}
+  .b-them{max-width:68%;background:var(--context-card);border-radius:16px;border-top-left-radius:4px;padding:10px 14px;font-size:14px}
+  .b-you{max-width:68%;background:#fff;border:1px solid var(--row-border);border-radius:16px;border-top-right-radius:4px;padding:10px 14px;font-size:14px;display:flex;gap:10px;align-items:flex-start}
+  .b-you .ck{flex-shrink:0;margin-top:1px}
+  .under{display:flex;align-items:center;gap:8px;margin:3px 2px 0;font-size:12px}
+  .linkbtn{background:none;border:0;padding:0;font-size:12px;font-weight:700;color:var(--cta)}
+  .linkbtn.muted{color:var(--grey-r);font-weight:600}
+  .goodcap{background:none;border:0;padding:0;font-size:12px;font-weight:700;color:var(--success-ink);display:inline-flex;align-items:center;gap:5px}
+  .whygood{max-width:68%;margin-top:6px;font-size:13px;color:var(--text-secondary);background:var(--lime-5);border-radius:10px;padding:10px 12px}
+  .fixc{width:78%;background:#fff;border:1px solid var(--row-border);border-radius:16px;border-top-right-radius:4px;padding:12px 16px 12px;display:flex;flex-direction:column;gap:9px}
+  .fixc .orig{display:flex;gap:10px;align-items:flex-start;padding-bottom:10px;border-bottom:1px solid var(--row-border);font-size:14px;color:var(--text-tertiary)}
+  .fixc .ast{color:#f08a00;font-size:22px;line-height:.85;font-weight:800;flex-shrink:0}
+  .fixc mark{background:var(--amber-5);box-shadow:inset 0 -2px 0 var(--amber-120);color:var(--ink-r);padding:0 2px;border-radius:2px}
+  .fixc .cor{font-size:14.5px;font-weight:700;color:var(--ink-r)}
+  .brk{display:flex;align-items:center;gap:7px;margin-top:12px;background:none;border:0;padding:4px 0;font-size:12.5px;font-weight:600;color:var(--grey-r)}
+  .brk:hover{color:var(--ink-r)}
+  .brk .chev{font-size:9px;transition:transform .15s}
+  .brk[aria-expanded="true"] .chev{transform:rotate(90deg)}
+  .brows{margin-top:6px;padding:10px 12px;background:var(--ground);border-radius:8px;display:flex;flex-direction:column;gap:8px}
+  .bnote{font-size:11.5px;color:var(--grey-r)}
+  .brows.dims{gap:2px;padding:10px 6px 6px}
+  .brows.dims .bnote{padding:0 8px 6px}
+  .brow{display:grid;grid-template-columns:72px minmax(0,1fr) 22px 44px;gap:8px;align-items:center;font-size:12px;color:var(--text-tertiary)}
+  .brow .bn{font-weight:600;color:var(--text-secondary)}
+  .brow .bw{line-height:1.3}
+  .brow .bs{text-align:right;font-variant-numeric:tabular-nums;font-weight:600;color:var(--text-secondary)}
+  .brow .bb{height:4px;border-radius:2px;background:#e3e7ec;overflow:hidden}
+  .brow .bb i{display:block;height:100%;background:var(--neutral-100)}
+  .caph{display:flex;align-items:baseline;justify-content:space-between;gap:10px;flex-wrap:wrap}
+  .caph>b{font-size:13px;font-weight:700;color:var(--ink-r)}
+  .dimn{font-size:12px;color:var(--grey-r)}
+  .dimn b{font-weight:600;color:var(--text-tertiary)}
+  .fixc .meta{display:flex;align-items:center;gap:6px 14px;flex-wrap:wrap}
+  .nlink{background:none;border:0;padding:0;font-size:12px;font-weight:700;color:var(--cta);display:inline-flex;align-items:center;gap:5px;white-space:nowrap}
+  .askic{width:26px;height:26px;border-radius:50%;border:0;background:none;color:var(--neutral-100);display:inline-grid;place-items:center;padding:0;flex-shrink:0}
+  .askic:hover{background:var(--busuublue-5);color:var(--busuublue-100)}
+  .askic.push{margin-left:auto}
+  .fixc .tog{margin-left:auto;background:none;border:0;font-size:12px;font-weight:700;color:var(--cta);padding:0;display:inline-flex;align-items:center;gap:4px}
+  .fixc .tog svg{transition:transform .2s}
+  .fixc.open .tog svg{transform:rotate(180deg)}
+  .fixc .ex{font-size:13.5px;color:var(--text-secondary);margin:0}
+  .nexts{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+  .nx{display:flex;gap:10px;align-items:center;padding:10px 12px;border-radius:10px;border:1px solid #e4effd;background:var(--busuublue-5);text-align:left;color:var(--ink-r)}
+  .nx .ic{width:30px;height:30px;border-radius:8px;display:grid;place-items:center;flex-shrink:0;background:var(--busuublue-100)}
+  .nx.cv{background:#fff;border-color:var(--row-border)}
+  .nx.cv .ic{background:var(--text-secondary)}
+  .nx b{display:block;font-size:12.5px;font-weight:700}
+  .nx small{display:block;font-size:11px;color:var(--grey-r)}
+  .fixfoot{display:flex;align-items:center;gap:6px;font-size:11.5px;color:var(--grey-r)}
+  .fixfoot .hb{width:26px;height:26px;border-radius:50%;border:0;background:none;color:var(--grey-r);display:grid;place-items:center;padding:0}
+  .fixfoot .hb:hover{background:var(--neutral-5)}
+  .fixfoot .linkbtn{margin-left:auto}
+  .fixc.goodc{border-color:var(--lime-20);background:linear-gradient(var(--lime-5),#fff 60%)}
+  .fixc.goodc .orig{color:var(--ink-r);border-bottom-color:var(--lime-20)}
+  .fixc.goodc .ck{flex-shrink:0;margin-top:1px}
+  .fixc .wl{color:var(--success-ink)}
+  .row.flash .fixc,.row.flash .b-you,.row.flash .b-them{box-shadow:0 0 0 3px #bcd6fb}
+  .empty{font-size:13px;color:var(--grey-r);padding:24px 0}
+
+  .pr{background:#fff}
+  .rd{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:10px;text-align:center;padding:40px;background:#fff;min-height:420px}
+  .rd .rd-sp{width:56px;height:56px;border-radius:50%;border:5px solid #dbe7fb;border-top-color:#116EEE;animation:rdspin .9s linear infinite;margin-bottom:14px}
+  @keyframes rdspin{to{transform:rotate(360deg)}}
+  .rd h2{margin:0;font-size:24px;font-weight:700;color:#1b1f27}
+  .rd p{margin:0;font-size:15px;color:#4b5563;max-width:460px;line-height:1.5}
+  .rd p b{color:#1b1f27}
+  .rd .rd-bar{width:260px;height:6px;border-radius:99px;background:#e5eaf2;overflow:hidden;margin-top:14px}
+  .rd .rd-bar i{display:block;height:100%;width:0;background:#116EEE;border-radius:99px;animation:rdbar 2.3s ease-out forwards}
+  @keyframes rdbar{to{width:100%}}
+  .rd button{all:unset;cursor:pointer;margin-top:16px;font-size:13px;font-weight:700;color:#116EEE;text-decoration:underline}
+  .ext{flex-shrink:0;opacity:.8}
+  .pr-top{display:flex;align-items:center;justify-content:center;position:relative;padding:12px 24px 0;flex-shrink:0}
+  .pr-x{position:absolute;left:20px;top:4px;width:32px;height:32px;border-radius:50%;border:0;background:none;color:var(--grey-r);display:flex;align-items:center;justify-content:center}
+  .pr-x:hover{background:var(--neutral-5)}
+  .pr-bar{width:500px;height:12px;border-radius:999px;background:#dde3ea;overflow:hidden}
+  .pr-bar i{display:block;height:100%;background:var(--success);border-radius:999px;transition:width .3s}
+  .pr-main{flex:1;min-height:0;overflow-y:auto;display:flex;flex-direction:column;align-items:center;padding:40px 24px 24px}
+  .pr-title{font-size:20px;font-weight:700;color:var(--text-primary)}
+  .pr-goal{display:flex;align-items:center;gap:8px;font-size:14px;color:var(--text-secondary);margin-top:8px}
+  .pr-goal .tg{font-size:15px}
+  .pr-from{display:block;font-size:12px;color:var(--grey-r);margin-top:6px}
+  .pr-from button{background:none;border:0;padding:0;color:var(--cta);font-weight:600;font-size:12px}
+  .pr-chat{width:560px;display:flex;flex-direction:column;gap:12px;margin-top:24px}
+  .pr-ai{background:var(--context-card);border-radius:12px;padding:20px 24px 14px;font-size:16px;line-height:1.5;color:var(--text-secondary);align-self:stretch}
+  .pr-ai .spk{display:inline-flex;margin-top:14px;color:var(--busuublue-100);background:none;border:0;padding:4px}
+  .pr-who{font-size:12px;font-weight:600;color:var(--grey-r);margin:4px 0 -6px 2px}
+  .pr-me{align-self:flex-end;max-width:460px;background:var(--busuublue-100);color:#fff;border-radius:12px;padding:14px 18px;font-size:16px;line-height:1.5}
+  .pr-fb{align-self:flex-end;display:inline-flex;align-items:center;gap:6px;font-size:12.5px;font-weight:600;color:var(--success-ink);background:var(--lime-5);box-shadow:inset 0 0 0 1px var(--lime-20);border-radius:999px;padding:4px 10px 4px 6px;margin-top:-4px}
+  .pr-fb .ck{width:16px;height:16px}
+  .pr-foot{flex-shrink:0;border-top:1px solid var(--row-border);display:flex;flex-direction:column;align-items:center;gap:10px;padding:28px 0 26px}
+  .pr-mic{width:84px;height:84px;border-radius:50%;border:2px solid var(--busuublue-100);background:#fff;color:var(--busuublue-100);display:flex;align-items:center;justify-content:center}
+  .pr-mic:hover{background:var(--busuublue-5)}
+  .pr-mic.rec{background:var(--busuublue-100);color:#fff;box-shadow:0 0 0 10px rgba(17,110,238,.14)}
+  .pr-hint{font-size:14px;color:var(--text-secondary)}
+  .cs-comp{flex-shrink:0;background:#fff;border-top:1px solid var(--hd-border);padding:12px 24px;display:flex;align-items:center;gap:10px;justify-content:center}
+  .askbox{flex:1;max-width:620px;height:42px;border-radius:999px;border:1px solid var(--border-subtle);background:var(--ground);display:flex;align-items:center;gap:10px;padding:0 6px 0 16px;color:var(--grey-r);font-size:14px;text-align:left}
+  .askbox .sp{flex:1}
+  .send{width:30px;height:30px;border-radius:50%;background:var(--cta);display:grid;place-items:center;flex-shrink:0}
+  .starter{height:32px;border-radius:999px;border:1px solid var(--row-border);background:#fff;padding:0 12px;font-size:12px;font-weight:600;color:var(--text-secondary);white-space:nowrap}
+  .starter:hover{border-color:var(--cta);color:var(--cta)}
+
+  .scrim{position:absolute;inset:0;background:rgba(18,27,38,.32);border:0;padding:0;cursor:default}
+  .drawer{position:absolute;left:50%;bottom:0;transform:translateX(-50%);width:880px;height:610px;background:#fff;border-radius:16px 16px 0 0;box-shadow:0 -12px 40px -8px rgba(18,27,38,.35);display:flex;flex-direction:column;overflow:hidden}
+  .dr-hd{display:flex;align-items:flex-start;gap:12px;padding:18px 22px 14px;border-bottom:1px solid var(--hd-border)}
+  .dr-hd b{display:block;font-size:16px;font-weight:700}
+  .dr-hd small{display:block;font-size:12px;color:var(--grey-r);margin-top:2px}
+  .dr-x{margin-left:auto;width:32px;height:32px;border-radius:50%;border:1px solid var(--row-border);background:#fff;color:var(--text-secondary);display:grid;place-items:center;padding:0}
+  .dr-body{flex:1;min-height:0;overflow-y:auto;padding:18px 22px;display:flex;flex-direction:column;gap:14px}
+  .ai{align-self:flex-start;max-width:86%;display:flex;gap:10px;align-items:flex-start}
+  .ai .av{width:28px;height:28px;border-radius:50%;background:var(--busuublue-5);display:grid;place-items:center;flex-shrink:0}
+  .ai .av img{width:18px;height:18px}
+  .ai .tx{font-size:14px;line-height:1.55;color:var(--ink-r);display:flex;flex-direction:column;gap:8px}
+  .ai .tx p{margin:0}
+  .ts{background:var(--busuublue-5);color:var(--busuublue-100);border:0;border-radius:5px;padding:0 5px;font-size:13px;font-weight:700;font-variant-numeric:tabular-nums}
+  .me{align-self:flex-end;max-width:70%;background:var(--busuublue-100);color:#fff;border-radius:16px;border-top-right-radius:4px;padding:9px 14px;font-size:14px}
+  .quote{align-self:flex-end;max-width:76%;border-left:3px solid var(--busuublue-100);background:var(--ground);border-radius:6px;padding:8px 12px;font-size:13px;color:var(--text-tertiary)}
+  .quote b{display:block;font-size:10.5px;letter-spacing:.04em;text-transform:uppercase;color:var(--grey-r);margin-bottom:2px}
+  .chips{display:flex;flex-wrap:wrap;gap:8px}
+  .dr-comp{border-top:1px solid var(--hd-border);padding:12px 22px;display:flex;gap:10px;align-items:center}
+  .dr-comp input{flex:1;height:42px;border-radius:999px;border:1px solid var(--border-subtle);background:var(--ground);padding:0 16px;font:inherit;font-size:14px;color:var(--ink-r)}
+  .dr-comp input:focus{outline:2px solid var(--busuublue-100);outline-offset:0}
+  .dr-comp .send{border:0}
+  .dr-note{font-size:11.5px;color:var(--grey-r)}
+  @media (prefers-reduced-motion:reduce){.row,.fixc .tog svg{transition:none}}
+</style>
+
+<div id="stage" hidden><div class="devwrap" id="devwrap"><div class="device" id="device"></div></div></div>
+<div id="dbstage" hidden></div>
+
+<script>
+const BUBBLE='data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABgAAAAYCAYAAADgdz34AAAACXBIWXMAAAsTAAALEwEAmpwYAAAAAXNSR0IArs4c6QAAAARnQU1BAACxjwv8YQUAAAAOdEVYdFNvZnR3YXJlAEZpZ21hnrGWYwAAAUBJREFUeAHtlO9NwzAQxd9dyvdELJANYATYgBGyQWCDskHDAoxAmKBhAroB4TNS8QLxcSmB5p9FG0dISPwkS3bivHdnXw7469Ahm8Lr9/AEiK2OeqnDUDPeVtFmkkEtyhapkCSQnbCLkkhyS5yZVVQeZKDi5yTy8IPwwEiYLvsmNCIek5VnfB7FsQxMuL9DI19PFK+J9fv7jl57odFfaPRreKJZRJqFqeedDNjaK8wAVzb5nnecic4wB7Qvju4dyOSzd8I953kMBOW4AfYvfLABF6MGWmKv8IWQm1b76Gdg4EephXLTftDNgGWDqRCKsVaxaC8qBAXpDbkE9AifiHknUFUImWxohQ0CFMbRVQe9KEq3L+0mp4aZZV5+/ZnHshg4ijwKKG3Eb7d3p0t4MGh2Gm3eiGe+4k606SX457f4ADpjePQJAQmUAAAAAElFTkSuQmCC';
+const I={
+  ext:'<svg class="ext" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M7 17 17 7M8 7h9v9"/></svg>',
+  check:'<svg class="ck" width="18" height="18" viewBox="0 0 24 24"><circle cx="12" cy="12" r="11" fill="#0EBE75"/><path d="M7 12.5l3.2 3.2L17 9" fill="none" stroke="#fff" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg>',
+  chev:'<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round"><path d="M6 9l6 6 6-6"/></svg>',
+  playb:'<svg width="11" height="11" viewBox="0 0 24 24" fill="currentColor"><path d="M8 5v14l11-7z"/></svg>',
+  askic:'<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"><path d="M4 5h16v11H10l-5 4v-4H4z"/><path d="M9 10.5h.01M12 10.5h.01M15 10.5h.01" stroke-width="2.6" stroke-linecap="round"/></svg>',
+  mic:'<svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><rect x="9" y="3" width="6" height="11" rx="3"/><path d="M5.5 11a6.5 6.5 0 0 0 13 0M12 17.5V21"/></svg>',
+  spk:'<svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linejoin="round" stroke-linecap="round"><path d="M4 9.5h3.5L12 5.5v13l-4.5-4H4z"/><path d="M15.5 9a4 4 0 0 1 0 6M18 6.5a7.5 7.5 0 0 1 0 11"/></svg>',
+  play:'<svg width="13" height="13" viewBox="0 0 24 24" fill="#fff"><path d="M8 5v14l11-7z"/></svg>',
+  chat:'<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.2" stroke-linejoin="round"><path d="M4 5h16v11H9l-5 4z"/></svg>',
+  send:'<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><path d="M12 19V5M5 12l7-7 7 7"/></svg>',
+  spark:'<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M12 3v4M12 17v4M3 12h4M17 12h4M6 6l2.5 2.5M15.5 15.5L18 18M6 18l2.5-2.5M15.5 8.5L18 6"/></svg>',
+  up:'<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"><path d="M7 10v11H3V10h4zM7 10l4-8c1.7 0 3 1.3 3 3v4h5.5a2 2 0 012 2.3l-1.3 8A2 2 0 0118.2 21H7"/></svg>',
+  x:'<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><path d="M6 6l12 12M18 6L6 18"/></svg>'
+};
+
+const MEETING={title:'Team offsite planning',date:'14 Oct 2026, 15:00',len:35};
+const AXN={rel:'Relevance',cla:'Clarity',gra:'Accuracy',voc:'Range',flu:'Fluency'};
+const AXV={rel:82,cla:55,gra:74,voc:72,flu:48};
+const AXS={rel:'strong',cla:'attn',gra:'ontrack',voc:'ontrack',flu:'attn'};
+const STW={strong:['Strong','#0EBE75'],ontrack:['On track','#116EEE'],attn:['Needs attention','#d97706']};
+const CEFR={
+  rng:{n:'Range',d:'Words and phrases you reach for',l:72,ax:'voc'},
+  acc:{n:'Accuracy',d:'Grammar control',l:80,ax:'gra'},
+  flu:{n:'Fluency',d:'Keeping going without restarts',l:48,ax:'flu'},
+  coh:{n:'Clarity',d:'Making your point easy to follow',l:57,ax:'cla'},
+  int:{n:'Relevance',d:'Answering what was actually asked',l:84,ax:'rel'}
+};
+const L={
+  struct:['Explaining how something works','Busuu lesson · Business English · B2 · 6 min'],
+  warn:['Giving a heads-up about a problem','Busuu lesson · Business English · B2 · 5 min'],
+  req:['Making suggestions and requests','Busuu lesson · Business English · B2 · 6 min'],
+  stat:['Giving status updates','Busuu lesson · Business English · B2 · 7 min'],
+  opin:['Giving a clear recommendation','Busuu lesson · Business English · B2 · 6 min'],
+  reg:['Choosing the right register at work','Busuu lesson · Business English · B2 · 5 min']
+};
+const C={
+  struct:['Explaining a product limitation','AI Conversation · 5 min'],
+  warn:['Flagging a risk to a client','AI Conversation · 5 min'],
+  req:['Agreeing a process with a colleague','AI Conversation · 6 min'],
+  stat:['Updating your manager on progress','AI Conversation · 5 min'],
+  opin:['Recommending a plan of action','AI Conversation · 5 min'],
+  reg:['Talking to colleagues in other teams','AI Conversation · 5 min']
+};
+const T_FULL=[{"who":"Maya","x":"Hi, how are you?","m":0.05,"t":"00:03","id":"f1"},{"who":"you","x":"Hey Maya, how’s it going?","m":0.08,"t":"00:05","id":"f2"},{"who":"Maya","x":"Good, thanks. Is Daniel joining us?","m":0.13,"t":"00:08","id":"f3"},{"who":"you","x":"Yes, he should be here in a minute.","m":0.18,"t":"00:11","id":"f4"},{"who":"Maya","x":"Okay. And how was your weekend?","m":0.42,"t":"00:25","id":"f5"},{"who":"you","x":"Pretty good. Well, we were— we were supposed to go hiking, but it rained the whole time. So we, uh, we just stayed in and cooked.","m":0.47,"t":"00:28","id":"m1","k":"good","ax":"rel","cap":"Maintaining relationships","why":"You shared a personal detail and fixed your own sentence mid-way without losing the thread."},{"who":"Maya","x":"Oh, that sounds nice anyway. Shall we get started?","m":0.75,"t":"00:45","id":"f6"},{"who":"you","x":"Sure, yes. Let’s do it.","m":0.83,"t":"00:50","id":"f7"},{"who":"Daniel","x":"Hi both, sorry I’m late.","m":1.08,"t":"01:05","id":"f8"},{"who":"Maya","x":"No problem, we were just starting.","m":1.17,"t":"01:10","id":"f9"},{"who":"Maya","x":"So I wanted to see where you are with the offsite plan, before we send the save-the-date to the whole team. Can you walk us through what’s booked?","m":2.28,"t":"02:17","id":"f10"},{"who":"you","x":"Sure. Yeah. All right. So let me take the points in order. So first off, the venue. <mark>I regret not booking earlier in the summer, because the first place we looked at filled up, and we had to start the search again from scratch.</mark> It was a bit of a scramble. It was just that all the good places were taken. That’s completely done now. We have a place in the hills, about ninety minutes by train from the office. It sleeps forty-five, and it has two meeting rooms and a big kitchen. Is the whole group coming from the main office? Okay, mostly the main office. So I’ve shared the booking confirmation with you in the chat of this meeting. I have another one in Spanish if that would be helpful for the Madrid team. We have the schedule in Spanish and we can do it in any other language. It’s just a machine translation.","m":2.43,"t":"02:26","id":"m3","k":"fix","ax":"cla","cap":"Explaining and clarifying","why":"Good opener, then the story about the first venue came before what Maya asked: what is booked now.","better":"The venue is booked: a place in the hills, 90 minutes by train, with room for 45.","nx":"struct"},{"who":"Maya","x":"Great, thank you. That’s a lot further along than I expected.","m":3.17,"t":"03:10","id":"f11"},{"who":"Daniel","x":"Is there parking, for the people who drive?","m":3.67,"t":"03:40","id":"f12"},{"who":"you","x":"Yes, there’s a car park for about twenty cars. I’ll send the details with the invite.","m":3.83,"t":"03:50","id":"f13"},{"who":"Maya","x":"Perfect.","m":4.5,"t":"04:30","id":"f14"},{"who":"Maya","x":"Send me the schedule once it’s done and I’ll do a first check. Then I’ll ask Daniel to give it his final seal of approval next week when we have our catch-up. Is there anything else I should know?","m":5.43,"t":"05:26","id":"f15"},{"who":"you","x":"Sure. Okay, yeah, no problem. There is one, one sticky part that I’ll raise just so you’re aware when you’re talking to the team. It’s the train on the Friday morning. So this is something with the rail line where, um, <mark>there are engineering works on that route, so some trains get cancelled or replaced by buses for a few hours.</mark> It’s not every train. Normally it runs every half hour, but on that morning it could be every hour, and part of the way is by bus. So that’s something we need to make people aware of. Nothing is cancelled outright. It’s just a delay that the rail company has announced, and they haven’t said exactly which trains are affected yet.","m":5.63,"t":"05:38","id":"m5","k":"fix","ax":"flu","cap":"Dealing with problems and incidents","why":"Several restarts before the point. Say the warning in one line, then the detail.","better":"One heads-up: there are engineering works on the Friday morning line. Some trains will be buses, so leave an hour early.","nx":"warn"},{"who":"Maya","x":"Okay, that’s useful. We’ll put a line about it in the invite.","m":6.83,"t":"06:50","id":"f16"},{"who":"Daniel","x":"The budget will have to go through finance before we can pay the deposit, so that could take a while.","m":7.58,"t":"07:35","id":"f17"},{"who":"you","x":"Right. I mean, I’m not in the conversations that you are, but my sense is, okay, we have a venue, it needs a deposit, it’s going to go through finance, then through approvals. And that’s really what I’m trying to understand: what are the steps that need to happen?","m":7.77,"t":"07:46","id":"m6","k":"good","ax":"rel","cap":"Giving an opinion","why":"You tied Daniel’s point back to the goal of getting the booking confirmed."},{"who":"Maya","x":"That makes sense.","m":8.33,"t":"08:20","id":"f18"},{"who":"Maya","x":"Okay, and so once we’re there, is lunch included, or do people sort out their own food on the first day?","m":9.1,"t":"09:06","id":"f19"},{"who":"you","x":"So for now people sort out their own lunch on the first day. Having the venue provide it would mean agreeing a menu in advance, and that would be a whole extra step. So right now it’s just breakfast and dinner that are included. One of the risks that we know about, and it may come up, and it’s good to get more feedback on, is that people have different dietary needs. We see that a lot. Even in our own team we think, oh no, I forgot that one. So we’re aware that’s going to happen, and <mark>it’s something that’s on. Well, we will.</mark>","m":9.35,"t":"09:21","id":"n1","k":"fix","ax":"cla","cap":"Explaining and clarifying","why":"The answer trailed off at the end. Close on the point you want her to pass on.","better":"For now people sort out their own lunch on day one. We know diets vary, so I’ll ask everyone to send theirs in.","nx":"struct"},{"who":"Daniel","x":"That’s a fair risk. Good to know.","m":10.08,"t":"10:05","id":"f20"},{"who":"Maya","x":"And does the price include a room for everybody, or only for some people?","m":10.48,"t":"10:29","id":"f21"},{"who":"you","x":"Okay. So, for now, just shared rooms. We’ve had feedback from the sales team and the support team that sharing a room isn’t going to work for a lot of people. So we’re working right now on upgrading some of them to single rooms. <mark>works right now and the booking that we’re— and the booking that we’d be confirming</mark> in the next couple of weeks is shared rooms.","m":10.55,"t":"10:33","id":"m7","k":"fix","ax":"gra","cap":"Explaining background and situation","why":"Two sentences ran into each other, so the key fact (it’s shared rooms today) got lost.","better":"Right now it’s shared rooms only. We’re working on upgrading some to single rooms.","nx":"struct"},{"who":"Maya","x":"Okay, and what about cost? If someone wants a single room, is the company paying for that, or do they pay the difference?","m":11.4,"t":"11:24","id":"f22"},{"who":"you","x":"Yes, the company pays. We’ve built that into the budget. For the first night, single rooms are covered for anyone who asks. Then there are a few more details. If someone wants to bring a guest, they cover the guest’s cost themselves. And there’s a limit on the number of single rooms, which finance asked us to include.","m":11.78,"t":"11:47","id":"m8","k":"good","ax":"cla","cap":"Explaining and clarifying","why":"A direct yes first, then the evidence. Easy to follow."},{"who":"Daniel","x":"That’s reassuring.","m":12.33,"t":"12:20","id":"f23"},{"who":"Maya","x":"But people won’t know that unless we tell them. When I book a trip, there’s always a form that asks if I need anything.","m":12.77,"t":"12:46","id":"f24"},{"who":"you","x":"No. Have you used a hotel booking app where you add your preferences? Okay, so it’s very similar to that. People fill it in on their phone, and the venue doesn’t see anything until we send it over. You could be filling one in right now and I wouldn’t know. So the way we handle it is we send one form and say it’s up to each person to fill it in. It’s similar here. There are reminders, and a link in every message, but people can mute them, because it gets a bit repetitive.","m":13.08,"t":"13:05","id":"m10","k":"good","ax":"rel","cap":"Supporting a point","why":"A comparison she already knew made a tricky point easy to accept."},{"who":"Maya","x":"Okay, so if we carry on as if I’m booking my own seat, is there a limit on how many people can come? It used to be 40. I don’t know whether that’s changed.","m":14.42,"t":"14:25","id":"f25"},{"who":"you","x":"Just so we have something to look at. No, the limit is 45 now.","m":14.65,"t":"14:39","id":"n2","k":"good","ax":"cla","cap":"Explaining and clarifying","why":"A short, direct answer to a factual question."},{"who":"Maya","x":"Okay, and then what happens? Then we get the schedule. Talk me through what happens next.","m":15.4,"t":"15:24","id":"f26"},{"who":"you","x":"And you get the schedule. <mark>It’s, it’s going out, it’s, these are—</mark> our designer has given us some little cards here, but it’s going to go out through the HR system. If they have questions about allergies, I think, Daniel, there’s a document about how those are collected, and what the arrangements are with the caterer and all of that. I don’t know if you have that handy to share, but it’s all documented.","m":15.5,"t":"15:30","id":"n3","k":"fix","ax":"flu","cap":"Explaining background and situation","why":"Several half-started ideas in one turn. Say what happens next, then where to find the detail.","better":"Then the schedule goes out to everyone. If they ask about allergies, Daniel has a document on how those are handled.","nx":"struct"},{"who":"Daniel","x":"Yes, it’s in the shared folder. At the bottom I list the page where the allergy section starts.","m":16.17,"t":"16:10","id":"f27"},{"who":"you","x":"All the fields. And then the final thing is the agenda. This is going to change quite a lot. We got a lot of comments from last year’s attendees about how packed it was, and this is only a one-hour slot, so it doesn’t really leave room for anything else. But it’s going to change quite a lot in the coming weeks. How people get there and the accommodation won’t change, but what’s on the agenda will. So we can let you know when that happens, and if you want to give people a heads-up that we’re making changes based on feedback.","m":16.28,"t":"16:17","id":"n4","k":"good","ax":"rel","cap":"Reporting and summarising","why":"You flagged that the agenda will change before she heard it from a team lead."},{"who":"Daniel","x":"My worry is changes close to the date. If the agenda keeps moving, people might get confused.","m":17.67,"t":"17:40","id":"f28"},{"who":"Maya","x":"Yes, we’d need some warning, so we can plan around it.","m":18.33,"t":"18:20","id":"f29"},{"who":"you","x":"And I’m happy to, you know, Maya, <mark>maybe we just need to set up like, here’s like, if anything is going to change, I give you X, I give you one week’s notice, X amount of time</mark> so that you can manage the comms. But the idea is moving quickly on the feedback that we’re getting.","m":18.57,"t":"18:34","id":"m9","k":"fix","ax":"rel","cap":"Making requests and offers","why":"Your proposal was good but hard to pick out. Make it one clear question she can say yes to.","better":"Could we agree I give you a week’s notice before any change, so you can manage the comms?","nx":"req"},{"who":"Daniel","x":"One option is a little “what’s new” note in the invite whenever something changes.","m":19.77,"t":"19:46","id":"f30"},{"who":"you","x":"The email that goes out says, here’s the new version, check the details. They check it and then they have all the updates. I think it’s a good idea what you just said, Daniel, to have some kind of changelog.","m":19.8,"t":"19:48","id":"m11","k":"good","ax":"rel","cap":"Agreeing and disagreeing","why":"You named Daniel and credited his idea. That keeps people bringing ideas."},{"who":"Maya","x":"Okay, so we still get feedback, it’s just not on the very latest plan. Um, have we got any team leads confirmed yet for the sessions? Has anyone shown interest?","m":20.3,"t":"20:18","id":"f31"},{"who":"you","x":"<mark>Um, someone from marketing has shown some interest. Um, I’m trying to set up a call with them along with Daniel,</mark> um, and then there’s yours. We don’t have anyone committed yet, but we have a couple.","m":20.53,"t":"20:32","id":"m4","k":"fix","ax":"cla","cap":"Reporting and summarising","why":"She asked a yes-or-no question. Your “not yet” came last, after the names.","better":"Not yet. Marketing is interested, and I’m setting up a call with them and Daniel.","nx":"stat"},{"who":"Maya","x":"Going back to what Daniel said, is it worth holding off on the agenda for a few weeks until it’s more settled? Or is there pressure on your side to get going now?","m":21.1,"t":"21:06","id":"f32"},{"who":"you","x":"<mark>Yeah, I think, yeah, I think that’s, that’s, that’s the point. I, I am anticipating</mark> that this is going to take several weeks to pin down. Even after the first conversations, it’ll take a while before anybody has actually signed up for a session. So the sooner we get going, the better. By the time people register, it’ll probably already have the new timings and all the updates anyway. So for the speakers, I’d go ahead and get them started, and that way we can get feedback on, hey, this slot doesn’t work, and then we can fix that part rather than waiting. And we’re looking at other ways to get feedback on the agenda, like a short survey, or just asking a few people. Because originally I don’t think we realised how long it would take to fill the sessions, and if we wait for that before getting feedback, we’re wasting time. So really the main goal right now is: can we fill the sessions? Can we get the speakers confirmed?","m":21.43,"t":"21:26","id":"m12","k":"fix","ax":"flu","cap":"Giving an opinion","why":"Your recommendation (“start now”) came at the very end of a long turn. Open with it, then give the reason.","better":"I’d start now. Confirming speakers will take weeks, and by then the timings will be settled.","nx":"opin"},{"who":"Maya","x":"All right. That’s helpful.","m":22.67,"t":"22:40","id":"f33"},{"who":"Maya","x":"The only restriction on the venue’s side is that the kitchen staff aren’t very confident with English, so we’ll need to lean on their manager, Ravi, quite a lot.","m":23.2,"t":"23:12","id":"f34"},{"who":"you","x":"Mm-hmm. I think so. He’s very keen on this and wants it to go well, so I think he’ll put in as much time as it takes. You said the staff aren’t very confident in English. Are they the ones who would be serving, who would be talking to the guests?","m":23.5,"t":"23:30","id":"n8","k":"good","ax":"cla","cap":"Explaining and clarifying","why":"You checked who would actually deal with guests before assuming."},{"who":"Daniel","x":"Yes, just two people on the evening shift.","m":24.17,"t":"24:10","id":"f35"},{"who":"Maya","x":"They might just say they can’t do the late dinner, and that’s fine. It’s only one evening, so the impact is quite limited. As long as it’s planned and communicated properly, I’m happy to go ahead.","m":25.45,"t":"25:27","id":"f36"},{"who":"you","x":"Yeah. <mark>Only thing I’d ask is, if that happens, that’s good information for us. In my mind that’s useful</mark> because we understand what stops them. So just record that, and if you can dig a little deeper and share with us what is stopping them. Is it just, hey, a late dinner is a non-starter, it’s a hard no? Or is there something deeper? Understanding it as much as we can is important.","m":26.25,"t":"26:15","id":"n7","k":"fix","ax":"rel","cap":"Making requests and offers","why":"Your request came after a lot of build-up. Put the ask first.","better":"One request: if they say no, could you find out exactly why and share it with us?","nx":"req"},{"who":"Maya","x":"Understood. And how should we frame it with the team?","m":27.08,"t":"27:05","id":"f37"},{"who":"you","x":"That’s fair, that’s what we need to find out. And about the framing, yes, absolutely. I’ll leave it to you. At any point, if you feel we should cancel it, if this is a risk to the budget, please, no hard feelings. That comes first. I don’t want anything you do to be put at risk. The framing is that this is a first draft of the plan that we’re exploring and we’re just trying to get some feedback on it. It’s not the final form of what it will look like. We’re trying to get feedback to inform what comes next. And as much as you want to frame it as the team shaping an offsite they’re going to attend, I think that’s a good framing too.","m":27.2,"t":"27:12","id":"m13","k":"good","ax":"rel","cap":"Maintaining relationships","why":"You gave Maya clear permission to cancel the plan. That builds trust with a nervous stakeholder."},{"who":"Maya","x":"Okay, that seems fair. Oh, and if this goes well and you make the changes, when do you see it becoming a yearly event?","m":28.17,"t":"28:10","id":"f38"},{"who":"you","x":"Our plan right now, or <mark>the OKRs and everything we have</mark> for the rest of this year, are just about proving the idea. So adjusting the agenda, trying it out with real people, getting their feedback, making changes, and just understanding.","m":28.4,"t":"28:24","id":"n6","k":"fix","ax":"voc","cap":"Explaining background and situation","why":"“OKRs” is internal shorthand that colleagues in other teams may not use.","better":"This year our goal is to prove the idea: do people find it valuable, and can we afford to repeat it?","nx":"reg"},{"who":"Maya","x":"Yes. To me it makes common sense, because you want it close to the office, in the flow of work, right? I think the real power would be somewhere with its own conference space.","m":29.62,"t":"29:37","id":"f39"},{"who":"you","x":"Yeah, absolutely, that’s on the table. And it solves a lot of problems for us as well if we could do that. It’s just a bigger hurdle to get over. The question right now is, whatever way we’re running the day, is what we’re doing with it valuable? That’s the question. This is just the cheapest way we can get that without going through the whole procurement process, which is <mark>pretty lame</mark>.","m":29.78,"t":"29:47","id":"m14","k":"fix","ax":"voc","cap":"Explaining background and situation","why":"“Pretty lame” is very casual for a cross-team call. A neutral phrase sounds more considered.","better":"…without the whole procurement process, which is a much bigger lift.","nx":"reg"},{"who":"Maya","x":"Great. I think we’re in a good place.","m":31.17,"t":"31:10","id":"f40"},{"who":"Maya","x":"Okay. But will the single rooms be just for that person, or for everybody who asks?","m":32.37,"t":"32:22","id":"f41"},{"who":"you","x":"Yeah, it would be everybody who asks.","m":32.48,"t":"32:29","id":"n5","k":"good","ax":"cla","cap":"Explaining and clarifying","why":"A direct answer to a sensitive question, with no hedging."},{"who":"Daniel","x":"Thanks, you two. All right.","m":33.5,"t":"33:30","id":"f42"},{"who":"you","x":"Just, just wait. So I have a call with Ravi and the venue next week, so I can pass that on then.","m":33.53,"t":"33:32","id":"n10","k":"good","ax":"rel","cap":"Scheduling and coordinating","why":"You caught a possible mix-up before the call ended."},{"who":"Maya","x":"Thanks for spending the time with me today. It’s been really useful.","m":34.33,"t":"34:20","id":"f43"},{"who":"you","x":"Thank you both. Speak soon.","m":34.5,"t":"34:30","id":"f44"}];
+let T=T_FULL;
+let MOM=T.filter(t=>t.k);
+const byId=id=>T.find(t=>t.id===id);
+
+const S={variant:'E',openCats:[4],practice:null,breakdown:false,filter:null,drawer:null,ctx:null,flash:null,mode:'moments',scrollTo:null,asked:null};
+
+function inFilter(m){
+  if(!S.filter)return true;
+  if(S.filter.startsWith('cap:'))return m.cap===S.filter.slice(4);
+  return m.ax===CEFR[S.filter].ax;
+}
+function filterLabel(){
+  if(!S.filter)return '';
+  if(S.filter.startsWith('cap:'))return S.filter.slice(4);
+  return CEFR[S.filter].n+' '+CEFR[S.filter].l+'/100';
+}
+
+const nextOf=t=>[L[t.nx],C[t.nx]];
+const capLead=()=>false;
+function glanceC(){
+  const ks=Object.keys(CEFR),overall=Math.round(ks.reduce((a,k)=>a+CEFR[k].l,0)/ks.length),open=S.breakdown;
+  const rows=ks.map(k=>{const d=CEFR[k];
+    return '<div class="dimrow"><span><b>'+d.n+'</b><small>'+d.d+'</small></span><span class="lvl'+(d.l>=60?' up':'')+'">'+d.l+'</span></div>';}).join('');
+  return '<div class="card"><div class="c-h">Your communication score for this call</div>'+
+    '<div class="cefr-top" style="margin-top:10px"><span class="cefr-big">'+overall+'<small style="font-size:20px;color:var(--grey-r);font-weight:700">/100</small></span><span class="c-sub" style="margin:0">Confident and natural. Long answers sometimes hide the main point.</span></div>'+
+    '<div class="scale"><div class="bar100"><i style="width:'+overall+'%"></i></div>'+
+    '<div class="mk" style="left:calc('+overall+'% - 2px)"></div>'+
+    '<div class="lb five">'+[0,25,50,75,100].map(n=>'<span>'+n+'</span>').join('')+'</div></div>'+
+    '<button class="brk" aria-expanded="'+!!open+'" onclick="act.breakdown()"><span class="chev">▶</span>What makes up this score</button>'+
+    (open?'<div class="brows dims"><div class="bnote">Each is scored across the whole call. Your score is the average of the five.</div>'+rows+'</div>':'')+
+    '<div class="hint" style="margin-top:8px">A score for this call only, not a placement result.</div></div>';
+}
+
+function lessonBtn(k,cls){return '<button class="nx'+(cls?' '+cls:'')+'"'+(cls?' title="Opens AI conversations in Busuu"':'')+' onclick="act.noop()"><span class="ic">'+(cls?I.chat:I.play)+'</span><span><b>'+(cls?C[k][0]:L[k][0])+'</b><small>'+(cls?C[k][1]+' · opens in Busuu':L[k][1])+'</small></span>'+(cls?I.ext:'')+'</button>';}
+const CATS={1:'Presenting and conveying ideas',2:'Engaging in conversation',3:'Making and responding to requests',4:'Explaining a decision',5:'Building rapport'};
+const CAP_CAT={'Giving an opinion':1,'Supporting a point':1,'Explaining and clarifying':1,
+  'Agreeing and disagreeing':2,'Managing discussion':2,
+  'Making requests and offers':3,'Dealing with problems and incidents':3,'Scheduling and coordinating':3,
+  'Reporting and summarising':4,'Explaining background and situation':4,
+  'Maintaining relationships':5};
+const MOMENT_CAT={m8:2}; /* answering the cost question = Giving clarification (category 2) */
+const catOf=m=>MOMENT_CAT[m.id]||CAP_CAT[m.cap];
+const CATCOL={1:['#116EEE','#f1f6fe'],2:['#7c3aed','#f6f2fe'],3:['#0d9488','#eefaf8'],4:['#db2777','#fdf2f7'],5:['#475569','#f2f4f7']};
+function delta(up,dn){return '<span class="delta">'+(up?'<span class="up">↑ '+up+'</span>':'')+(dn?'<span class="dn">↓ '+dn+'</span>':'')+'</span>';}
+const FOCUS_CAP='Explaining background and situation';
+function focusStrip(){
+  const ms=MOM.filter(m=>m.cap===FOCUS_CAP),fx=ms.filter(m=>m.k==='fix'),gd=ms.length-fx.length,allFix=MOM.filter(m=>m.k==='fix').length;
+  const on=S.filter==='cap:'+FOCUS_CAP;
+  return '<div class="fq" role="button" tabindex="0" aria-label="Your focus: '+FOCUS_CAP+'. Go to the first moment" onclick="act.focusGo()" onkeydown="if(event.key===\'Enter\'||event.key===\' \'){event.preventDefault();act.focusGo();}"><span class="fq-k">Your focus</span>'+
+    '<span class="fq-n">'+FOCUS_CAP+'</span>'+
+    '<span class="fq-t">Say where things stand now, then give the backstory.</span>'+
+    '<button class="nlink fq-p" title="'+L.struct[0]+' · '+L.struct[1]+'" onclick="event.stopPropagation()">'+I.playb+'Study on Busuu</button></div>';
+}
+function capsBody(){
+  const cats={};
+  MOM.forEach(m=>{const c=catOf(m),g=cats[c]||(cats[c]={up:0,dn:0,caps:{}});
+    const k=g.caps[m.cap]||(g.caps[m.cap]={up:0,dn:0});
+    if(m.k==='good'){g.up++;k.up++;}else{g.dn++;k.dn++;}});
+  const body=Object.keys(CATS).map(Number).map(i=>{
+    const g=cats[i],open=S.openCats.includes(i);
+    const cc='--cc:'+CATCOL[i][0]+';--ct:'+CATCOL[i][1];
+    if(!g)return '<div class="cat none"><div class="cat-h"><span class="cat-ic">'+i+'</span><span class="cat-tx"><span class="cat-nm">'+CATS[i]+'</span><span class="n">Not in this call</span></span></div></div>';
+    const n=Object.keys(g.caps).length;
+    const rows=Object.entries(g.caps).sort((x,y)=>(y[1].up-y[1].dn)-(x[1].up-x[1].dn)).map(([cap,d])=>{const k='cap:'+cap;
+      return '<button class="caprow" aria-pressed="'+(S.filter===k)+'" onclick="act.glance(\''+k+'\')"><span><b>'+cap+'</b></span>'+delta(d.up,d.dn)+'</button>';}).join('');
+    return '<div class="cat'+(open?' open':'')+'" style="'+cc+'"><button class="cat-h" aria-expanded="'+open+'" onclick="act.cat('+i+')"><span class="cat-ic">'+i+'</span><span class="cat-tx"><span class="cat-nm">'+CATS[i]+'</span><span class="n">'+n+' capabilit'+(n===1?'y':'ies')+' in this call</span></span>'+delta(g.up,g.dn)+'<span class="chev">›</span></button>'+
+      (open?'<div class="cat-b">'+rows+'</div>':'')+'</div>';
+  }).join('');
+  return '<div class="c-h">Your capabilities in this call</div>'+
+    '<div class="cats">'+body+'</div>'+
+    '<div class="hint" style="margin-top:8px">Tap a capability to see its moments.</div>';
+}
+function focusCard(){return '<div class="card">'+focusStrip()+'<div style="margin-top:24px">'+capsBody()+'</div></div>';}
+function rating(){
+  return '<div class="rating"><div class="q">Was this feedback helpful?</div><div class="th"><button aria-label="Thumbs up" onclick="act.noop()">👍</button><button aria-label="Thumbs down" onclick="act.noop()">👎</button></div>'+
+    '<textarea id="rate-comment" placeholder="Add an optional comment…" maxlength="500"></textarea><div class="ct">0/500</div><button class="sub" disabled>Submit feedback</button></div>';
+}
+
+function visibleTurns(){
+  if(S.mode==='all')return T;
+  const keep=new Set();
+  T.forEach((t,i)=>{if(t.k){keep.add(t.id);const p=T[i-1];if(p&&p.who!=='you')keep.add(p.id);}});
+  return T.filter(t=>keep.has(t.id));
+}
+function turnHTML(t){
+  const nm=t.who==='you'?'You':t.who;
+  const dim=S.filter&&!(t.k&&inFilter(t))?' dim':'';
+  const fl=S.flash===t.id?' flash':'';
+  const head='<span class="nm">'+nm+'<time>'+t.t+'</time></span>';
+  if(t.who!=='you')return '<div class="row them'+dim+fl+'" data-id="'+t.id+'">'+head+'<div class="b-them">'+t.x+'</div></div>';
+  const ask='<button class="askic" title="Ask about this" aria-label="Ask about this turn" onclick="act.ask(\''+t.id+'\')">'+I.askic+'</button>';
+  if(!t.k)return '<div class="row you'+dim+fl+'" data-id="'+t.id+'">'+head+'<div class="b-you">'+t.x+'</div><div class="under">'+ask+'</div></div>';
+  const cl=capLead(),caph=cl?'<div class="caph"><b>'+t.cap+'</b><span class="dimn"><b>'+AXN[t.ax]+'</b> · '+DIMNOTE[t.id]+'</span></div>':'',
+    pill=cl?'':'<span class="pill p-cap">'+t.cap+'</span>',nx=nextOf(t);
+  if(t.k==='good'){
+    return '<div class="row you'+dim+fl+'" data-id="'+t.id+'">'+head+
+      '<div class="fixc goodc">'+caph+'<div class="orig">'+I.check+'<span>'+t.x+'</span></div>'+
+      '<p class="ex"><b class="wl">Went well.</b> '+t.why+'</p>'+
+      '<div class="meta">'+pill+ask.replace('askic','askic push')+'</div></div></div>';
+  }
+  return '<div class="row you'+dim+fl+'" data-id="'+t.id+'">'+head+
+    '<div class="fixc">'+caph+'<div class="orig"><span class="ast">*</span><span>'+t.x+'</span></div>'+
+    '<div class="cor">'+t.better+'</div><p class="ex">'+t.why+'</p>'+
+    '<div class="meta">'+pill+
+    '<button class="nlink" title="'+nx[0][0]+' · '+nx[0][1]+'" onclick="act.noop()">'+I.playb+'Study on Busuu</button>'+
+    '<button class="nlink" title="Opens AI conversations in Busuu · '+nx[1][0]+' · '+nx[1][1]+'" onclick="act.practice(\'start\')">Practise with AI conversations'+I.ext+'</button>'+
+    ask.replace('askic','askic push')+'</div></div></div>';
+}
+function mapHTML(){
+  const H=520,top=18,y=m=>top+m/MEETING.len*H;
+  let h='<div class="ln"></div>';
+  [0,10,20,30].forEach(v=>{h+='<span style="top:'+y(v)+'px">'+v+'m</span>';});
+  MOM.forEach(m=>{const dim=S.filter&&!inFilter(m);
+    h+='<button class="'+m.k+(dim?' dim':'')+(S.flash===m.id?' cur':'')+'" style="top:'+y(m.m)+'px" aria-label="'+m.t+' '+(m.k==='good'?'went well':'fix')+'"'+(dim?' tabindex="-1"':' onclick="act.jump(\''+m.id+'\')"')+'></button>';});
+  return '<div class="map" aria-label="Meeting timeline">'+h+'</div>';
+}
+function rhead(){
+  return '<div class="cs-rhead"><h3>Review your conversation</h3>'+
+    '<div class="mseg" role="group" aria-label="Show"><button aria-pressed="'+(S.mode==='moments')+'" onclick="act.mode(\'moments\')">Moments only</button><button aria-pressed="'+(S.mode==='all')+'" onclick="act.mode(\'all\')">All turns</button></div>'+
+    '<div class="key"><span><i style="background:#0EBE75"></i>Went well · '+MOM.filter(m=>m.k==='good').length+'</span><span><i style="background:#d97706"></i>To work on · '+MOM.filter(m=>m.k==='fix').length+'</span></div></div>';
+}
+function rightCol(){
+  return rhead()+
+    '<div class="cs-scroll" id="cs-scroll">'+mapHTML()+'<div class="conv">'+visibleTurns().map(turnHTML).join('')+'</div></div>';
+}
+
+const STARTERS=['How clear was I when Maya asked if anyone had confirmed?','Did I answer Daniel\u2019s worry about changes close to the date?','How did I come across when explaining the room costs?'];
+function drawerHTML(){
+  if(!S.drawer)return '';
+  let body='';
+  if(S.drawer==='all'){
+    body='<div class="ai"><span class="av"><img src="'+BUBBLE+'" alt=""></span><div class="tx"><p>Ask me anything about how this call went. I can only see what was said in it, by you and the others.</p><p>Try one of these, or write your own.</p><div class="chips">'+
+      STARTERS.map((s,i)=>'<button class="starter" onclick="act.starter('+i+')">'+s+'</button>').join('')+'</div></div></div>';
+  } else {
+    const t=byId(S.ctx);
+    body='<div class="quote"><b>About this turn · '+(t.who==='you'?'You':t.who)+' · '+t.t+'</b>'+t.x.replace(/<\/?mark>/g,'')+'</div>';
+    if(S.ctx==='m4'){
+      body+='<div class="me">How clear was my response?</div>'+
+      '<div class="ai"><span class="av"><img src="'+BUBBLE+'" alt=""></span><div class="tx">'+
+      '<p>Clear in the end, but not at first. Maya asked a yes-or-no question: is anyone confirmed? You opened with marketing and Daniel, and \u201cwe don\u2019t have anyone committed yet\u201d came last. Until then, she could easily have heard \u201cyes, marketing\u201d.</p>'+
+      '<p>Lead with the status, then the detail:</p>'+
+      '<p><b>\u201cNot yet. Marketing is interested, and I\u2019m setting up a call with them and Daniel.\u201d</b></p>'+
+      '<p>You did this well earlier, at <button class="ts" onclick="act.jumpTo(\'m8\')">'+byId('m8').t+'</button>, when she asked about cost: \u201cYes, the company pays. We\u2019ve built that into the budget.\u201d</p>'+
+      '<div class="chips"><span class="pill p-cap">Reporting and summarising</span></div>'+
+      '<div class="nexts" style="max-width:560px">'+lessonBtn('stat')+lessonBtn('stat','cv')+'</div></div></div>'+
+      '<div class="chips" style="align-self:flex-end"><button class="starter" onclick="act.noop()">Where else did I bury the answer?</button><button class="starter" onclick="act.noop()">How did I come across to Maya?</button></div>';
+    } else {
+      body+='<div class="ai"><span class="av"><img src="'+BUBBLE+'" alt=""></span><div class="tx"><p>What would you like to know about this turn?</p><div class="chips">'+
+        ['How clear was this?','How did this come across?','What could I say instead?'].map(q=>'<button class="starter" onclick="act.noop()">'+q+'</button>').join('')+'</div>'+
+        '</div></div>';
+    }
+  }
+  return '<button class="scrim" aria-label="Close" onclick="act.close()"></button><div class="drawer" role="dialog" aria-label="Ask about this conversation">'+
+    '<div class="dr-hd"><div><b>Ask about this conversation</b><small>Team offsite planning · answers use this call’s transcript only</small></div><button class="dr-x" aria-label="Close" onclick="act.close()">'+I.x+'</button></div>'+
+    '<div class="dr-body">'+body+'</div>'+
+    '<div class="dr-comp"><label for="ask-input" class="sr" style="position:absolute;left:-9999px">Ask a question</label><input id="ask-input" placeholder="'+(S.drawer==='all'?'Ask about this conversation…':'Ask a follow-up…')+'"><button class="send" aria-label="Send" onclick="act.noop()">'+I.send+'</button></div></div>';
+}
+
+const PRACTICE={from:'n6',title:'Explaining Where a Project Stands',goal:'Explain where the project is now and what comes next.',
+  me:'This year our goal is to prove the idea: do people find it valuable, and can we afford to repeat it?',fb:'Situation first. Nice.',
+  ai2:'That makes sense. What would you need to see from this event to repeat it?'};
+function practicePrompt(){
+  const i=T.findIndex(t=>t.id===PRACTICE.from);let j=i-1;while(j>=0&&T[j].who==='you')j--;
+  const p=T[j],parts=p.x.match(/[^.?!]+[.?!]+/g)||[p.x],q=parts.findIndex(x=>x.includes('?'));
+  let x=parts.slice(Math.max(0,q)).join('').trim().replace(/^((um|uh|so|okay|oh|and|like),?\s+)+/i,'');
+  return {who:p.who,t:p.t,x:x.charAt(0).toUpperCase()+x.slice(1)};
+}
+function practiceScreen(){
+  if(S.redir)return '<div class="chrome"><i></i><i></i><i></i><span>Redirecting to Busuu…</span></div><div class="cs pr" id="cs"><div class="rd" role="status" aria-live="polite"><div class="rd-sp" aria-hidden="true"></div><h2>Redirecting to Busuu…</h2><p>Creating a custom scenario based on <b>your meeting</b>.</p><div class="rd-bar"><i></i></div><button onclick="act.practice(null)">Cancel</button></div></div>';
+  const st=S.practice,done=st==='done',pp=practicePrompt();
+  return '<div class="chrome"><i></i><i></i><i></i><span>Busuu \u00b7 AI Conversation</span></div>'+
+  '<div class="cs pr" id="cs">'+
+    '<div class="pr-top"><button class="pr-x" aria-label="Close and go back to your feedback" onclick="act.practice(null)">'+I.x+'</button><div class="pr-bar" role="progressbar" aria-valuenow="'+(done?1:0)+'" aria-valuemax="3"><i style="width:'+(done?34:0)+'%"></i></div></div>'+
+    '<div class="pr-main">'+
+      '<div class="pr-title">'+PRACTICE.title+'</div>'+
+      '<div class="pr-goal"><span class="tg">\ud83c\udfaf</span>'+PRACTICE.goal+'</div>'+
+      '<div class="pr-chat">'+
+        '<div class="pr-ai">'+pp.x+'<br><button class="spk" aria-label="Play">'+I.spk+'</button></div>'+
+        (done?'<div class="pr-me">'+PRACTICE.me+'</div><span class="pr-fb">'+I.check+PRACTICE.fb+'</span>'+
+          '<div class="pr-ai">'+PRACTICE.ai2+'<br><button class="spk" aria-label="Play">'+I.spk+'</button></div>':'')+
+      '</div></div>'+
+    '<div class="pr-foot"><button class="pr-mic'+(st==='rec'?' rec':'')+'" aria-label="'+(st==='rec'?'Stop recording':'Record')+'" onclick="act.mic()">'+I.mic+'</button>'+
+      '<span class="pr-hint">'+(st==='rec'?'Recording\u2026 click to stop':'Click to record')+'</span></div>'+
+  '</div>';
+}
+
+function screen(){
+  if(S.practice)return practiceScreen();
+  const g=glanceC();
+  return '<div class="cs" id="cs">'+
+    '<div class="cs-hd"><button class="cs-back" onclick="act.back()">← Back to dashboard</button><div class="cs-title"><b>'+MEETING.title+'</b><small>'+MEETING.date+' · 35 min · 3 people</small></div><button class="cs-cta" onclick="act.noop()">Go to Busuu →</button></div>'+
+    '<div class="cs-body"><div class="cs-left" id="cs-left">'+g+focusCard()+rating()+'</div><div class="cs-right">'+rightCol()+'</div></div>'+
+    '<div class="cs-comp"><button class="askbox" onclick="act.drawer()"><span class="sp">Ask about this conversation…</span><span class="send">'+I.send+'</span></button>'+
+      '<button class="starter" onclick="act.starter(0)">How clear was I with Maya?</button><button class="starter" onclick="act.drawer()">More questions</button></div>'+
+    drawerHTML()+
+  '</div>';
+}
+
+let rdT=null;
+function startRedir(){S.redir=true;clearTimeout(rdT);rdT=setTimeout(()=>{if(S.practice&&S.redir){S.redir=false;render();}},2400);}
+const act={
+  noop(){},
+  breakdown(){S.breakdown=!S.breakdown;render();},
+  practice(st){S.practice=st;S.drawer=null;if(st==='start')startRedir();else{clearTimeout(rdT);S.redir=false;}render();},
+  mic(){S.practice=S.practice==='rec'?'done':'rec';render();},
+  cat(i){S.openCats=S.openCats.includes(i)?S.openCats.filter(x=>x!==i):S.openCats.concat(i);render();},
+  glance(k){S.filter=(k&&S.filter!==k)?k:null;S.flash=null;S.drawer=null;S.mode='moments';S.scrollTo=S.filter?'first':'top';S.smooth=true;render();},
+  mode(m){S.mode=m;render();},
+  focusGo(){S.filter='cap:'+FOCUS_CAP;if(!S.openCats.includes(4))S.openCats=S.openCats.concat(4);S.drawer=null;S.flash=null;S.mode='moments';S.scrollTo='first';S.smooth=true;render();},
+  jump(id){S.smooth=true;S.flash=id;S.filter=S.filter&&inFilter(byId(id))?S.filter:null;S.scrollTo=id;render();},
+  jumpTo(id){S.smooth=true;S.drawer=null;S.ctx=null;S.filter=null;S.flash=id;S.scrollTo=id;render();},
+  ask(id){S.drawer='turn';S.ctx=id;render();},
+  starter(i){if(i===0){S.drawer='turn';S.ctx='m4';}else{S.drawer='all';}render();},
+  drawer(){S.drawer='all';S.ctx=null;render();},
+  close(){S.drawer=null;S.ctx=null;render();}
+};
+
+const stage=document.getElementById('stage'),dbstage=document.getElementById('dbstage');
+let dbframe=null,dbReady=false,dbPending=null,saved={conv:0,left:0};
+function render(){
+  const d=document.getElementById('device');if(!d)return;
+  const sc=document.getElementById('cs-scroll'),lf=document.getElementById('cs-left');
+  if(sc)saved.conv=sc.scrollTop; if(lf)saved.left=lf.scrollTop;
+  d.innerHTML=screen();
+  const sc2=document.getElementById('cs-scroll'),lf2=document.getElementById('cs-left');
+  if(!sc2){S.scrollTo=null;S.smooth=false;fit();return;}
+  if(lf2)lf2.scrollTop=saved.left;
+  if(S.scrollTo==='first'){const f=S.filter&&MOM.find(inFilter);S.scrollTo=f?f.id:'top';}
+  const smooth=S.smooth&&!(window.matchMedia&&matchMedia('(prefers-reduced-motion:reduce)').matches);
+  const go=y=>{if(smooth){sc2.scrollTop=saved.conv;sc2.scrollTo({top:y,behavior:'smooth'});}else sc2.scrollTop=y;};
+  if(S.scrollTo==='top'){go(0);}
+  else if(S.scrollTo){const el=sc2.querySelector('[data-id="'+S.scrollTo+'"]');if(el)go(Math.max(0,el.offsetTop-90));else sc2.scrollTop=saved.conv;}
+  else sc2.scrollTop=saved.conv;
+  S.smooth=false;
+  S.scrollTo=null;
+  fit();
+}
+function fit(){
+  const d=document.getElementById('device');if(!d||!d.offsetWidth)return;
+  const M=Math.min(24,innerWidth*.02),s=Math.min((innerWidth-2*M)/d.offsetWidth,(innerHeight-2*M)/d.offsetHeight);
+  d.style.transform='scale('+s+')';d.style.left=Math.max(0,(innerWidth-d.offsetWidth*s)/2)+'px';d.style.top=Math.max(0,(innerHeight-d.offsetHeight*s)/2)+'px';
+}
+window.addEventListener('resize',fit);
+function showEval(){
+  dbstage.hidden=true;stage.hidden=false;
+  Object.assign(S,{practice:null,breakdown:false,filter:null,drawer:null,ctx:null,flash:null,mode:'moments',scrollTo:'top'});
+  clearTimeout(rdT);S.redir=false;
+  render();
+}
+function showDash(step){
+  stage.hidden=true;dbstage.hidden=false;
+  if(!dbframe){
+    dbframe=document.createElement('iframe');dbframe.className='dbframe';dbframe.title='Busuu Companion';
+    dbframe.onload=()=>{dbReady=true;if(dbPending){dbframe.contentWindow.postMessage(dbPending,'*');dbPending=null;}};
+    dbframe.src='dashboard.html#step:'+step;dbstage.appendChild(dbframe);
+  } else if(dbReady)dbframe.contentWindow.postMessage({step},'*');
+  else dbPending={step};
+}
+act.back=()=>showDash('prog');
+window.addEventListener('message',e=>{
+  if(!dbframe||e.source!==dbframe.contentWindow||!e.data)return;
+  if(e.data.open==='eval')showEval();
+});
+if(window.ResizeObserver)new ResizeObserver(fit).observe(document.documentElement);
+document.addEventListener('keydown',e=>{
+  if(e.code==='KeyN'&&e.shiftKey&&!e.ctrlKey&&!e.metaKey&&!e.altKey&&dbframe&&dbReady&&!dbstage.hidden&&!/^(INPUT|TEXTAREA)$/.test((e.target||{}).tagName||'')){e.preventDefault();dbframe.contentWindow.postMessage({notif:true},'*');}
+});
+showDash('home');
+</script>
+
+
+</body></html>
